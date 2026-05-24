@@ -1,0 +1,22 @@
+This product includes content from:
+
+  google-labs-code/design.md
+  https://github.com/google-labs-code/design.md
+  Copyright (c) Google LLC
+  Licensed under the Apache License, Version 2.0.
+
+The following files are vendored unmodified from the above project at
+tag v0.1.1:
+
+  skills/design-md/references/spec.md
+    (from docs/spec.md)
+  skills/design-md/references/upstream-README.md
+    (from README.md)
+  skills/design-md/references/examples/atmospheric-glass.md
+    (from examples/atmospheric-glass/DESIGN.md)
+  skills/design-md/references/examples/paws-and-paths.md
+    (from examples/paws-and-paths/DESIGN.md)
+  skills/design-md/references/examples/totality-festival.md
+    (from examples/totality-festival/DESIGN.md)
+
+This repository is not affiliated with or endorsed by Google.

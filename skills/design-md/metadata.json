@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "format_version": "0.1.1",
+  "license": "Apache-2.0",
+  "abstract": "Stack-agnostic skill that teaches AI agents to read, write, and apply Google Labs' DESIGN.md format for design systems. Covers token reference syntax, the MD3-style component schema, prose-only properties (shadows, blurs, gradients), and verification with the official linter. Framework-neutral — works with React, Vue, Svelte, plain CSS, mobile, or any UI stack.",
+  "references": [
+    "https://github.com/google-labs-code/design.md",
+    "https://www.npmjs.com/package/@google/design.md"
+  ]
+}

@@ -1,0 +1,11 @@
+upstream: google-labs-code/design.md
+tag: 0.1.1
+vendored_at: 2026-05-22
+modifications: none
+
+files:
+  - docs/spec.md                                  -> spec.md
+  - README.md                                     -> upstream-README.md
+  - examples/atmospheric-glass/DESIGN.md          -> examples/atmospheric-glass.md
+  - examples/paws-and-paths/DESIGN.md             -> examples/paws-and-paths.md
+  - examples/totality-festival/DESIGN.md          -> examples/totality-festival.md
