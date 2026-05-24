@@ -6,6 +6,7 @@ This skill teaches AI agents to:
 
 - Discover and read `DESIGN.md` files in any project
 - Parse the YAML token frontmatter and markdown prose layer
+- Author a new `DESIGN.md` from a brief, conforming to the spec
 - Apply the design system when generating UI code in any framework
 - Validate edits with the official linter
 
@@ -36,7 +37,7 @@ The skill is stack-agnostic. It doesn't assume React, Tailwind, or any specific 
 
 ## What It Doesn't Do
 
-- It doesn't generate a `DESIGN.md` from a vibe prompt — that's the LLM's job. This skill teaches the format the LLM should produce.
+- It doesn't make design decisions for you. The creative choices — palette, type, personality — are the LLM's to make; the skill ensures whatever it produces is a valid, well-structured `DESIGN.md`.
 - It doesn't reverse-engineer existing CSS into a `DESIGN.md`. For that, use [Google's `extract-design-md` skill](https://skills.sh/google-labs-code/stitch-skills/extract-design-md).
 - It doesn't replace design tools like Figma or Stitch.
 

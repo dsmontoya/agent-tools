@@ -1,13 +1,14 @@
 ---
 name: design-md
 description: |
-  Use when a project contains a DESIGN.md file (Google Labs' open-source format
-  for design systems) and the user is doing UI, theming, or component work.
+  Use when working with DESIGN.md (Google Labs' open-source format for design
+  systems) — whether a file already exists or the user wants to author one.
   This skill teaches the format — YAML token frontmatter plus markdown prose —
   and how to apply it when generating or modifying UI in any framework (React,
   Vue, Svelte, plain CSS, mobile, etc.). Triggers: DESIGN.md present in repo;
   UI / theme / component edits; design token mentions; "make it look like X"
-  or "match the brand" tasks when a design system is in the project.
+  or "match the brand" tasks; requests to create or generate a design system
+  from a brief (e.g. "/design-md create a design for a jewelry store").
 license: Apache-2.0
 metadata:
   author: daniel
@@ -26,12 +27,13 @@ Activate this skill when:
 - The user is creating, editing, or styling UI components
 - The user mentions design tokens, theming, or a "design system"
 - A request implies a visual change ("make it look like X", "match the brand", "match the design")
+- The user asks to author a new design system from a brief ("/design-md create a design for a modern jewelry store in Mexico", "make me a design system for X") — see [Creating a DESIGN.md](#creating-a-designmd)
 
-If no `DESIGN.md` exists, exit quietly — there is nothing to apply.
+If no `DESIGN.md` exists *and the user isn't asking to create one*, exit quietly — there is nothing to apply.
 
 ## What This Skill Is Not For
 
-- Generating a `DESIGN.md` from a vibe prompt — that is the LLM's job; this skill teaches the format the LLM should produce.
+- Substituting for design judgment — the creative choices (palette, type, personality) are yours to make. The skill governs how they're *encoded*, not what they should *be*. To author a new file from a prompt, see [Creating a DESIGN.md](#creating-a-designmd) below.
 - Replacing design tools like Figma or Stitch.
 - Reverse-engineering existing CSS into a `DESIGN.md`. For that, use Google's `extract-design-md` skill.
 
@@ -159,6 +161,19 @@ These properties are typically described in the markdown body, never in YAML. Wh
 | Build a layout                | `## Layout & Spacing`, `## Brand & Style`                 |
 | Add a typography choice       | `## Typography`, `## Components`                          |
 | Define a new component        | All sections, then run the linter                         |
+
+## Creating a DESIGN.md
+
+When no file exists and the user describes a brand, product, or vibe ("create a design for a modern jewelry store in Mexico"), author a new one. Division of labor: **you supply the creative content** (palette, type, personality); **the spec governs structure and validity.**
+
+1. **Establish the brief.** Pull what the prompt gives you — product, audience, mood, cultural/regional cues, constraints. If it's rich enough, proceed. Only ask the user when something essential is genuinely missing (e.g., light vs. dark theme, or a hard brand constraint like an existing logo color). Reasonable defaults beat a questionnaire — don't interrogate.
+2. **Decide placement.** Default to `DESIGN.md` at the project root, unless the user names a path or the repo is a monorepo where a per-app location fits better.
+3. **Design the system, then encode it.** Choose a cohesive palette, a typographic pairing, shape language, and spacing rhythm that fit the brief. Write *both* layers: YAML tokens (the normative values) and prose (the rationale). Prose color names should map to token names (e.g., "Obsidian" → `primary`).
+4. **Follow the spec exactly.** Section order, naming conventions, `{token.references}`, sibling variants (`-hover`, not nested) — all per [`references/spec.md`](./references/spec.md). Use [`references/examples/`](./references/examples) as structural templates, not content to copy.
+5. **Be complete, not bloated.** A solid starting file covers Overview, Colors, Typography, Layout, Shapes, and a handful of core Components (buttons, inputs, cards). Typography usually wants 9–15 levels. Omit sections you have nothing meaningful to say about rather than padding them.
+6. **Verify before handoff.** Run `npx @google/design.md lint <path>` and fix every error (including contrast warnings). Confirm each prose color name traces to a token.
+
+Then tell the user what you created and offer to apply it to real UI.
 
 ## Applying DESIGN.md
 
