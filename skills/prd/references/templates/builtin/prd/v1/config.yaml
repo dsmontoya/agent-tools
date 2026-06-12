@@ -1,0 +1,51 @@
+# Built-in PRD template bundle — v1
+#
+# Manifest read by the skill at session start (see SKILL_DESIGN.md §17.3).
+# Declares which artifacts make up a PRD corpus, where they live, and how
+# load-bearing concepts map to template sections.
+#
+# Schema:
+#   name:     bundle name (must match parent folder)
+#   version:  semver string (the @<version> suffix in .prd.yaml refers to the
+#             major version; "1.2.3" matches "@1")
+#   artifacts: map of artifact-id → declaration
+#     template:     path to the markdown template file, relative to this config
+#     storage:      "singleton" (one file at a fixed path) or
+#                   "per_instance" (one file per slug)
+#     path:         singleton only — corpus-relative path
+#     path_pattern: per_instance only — corpus-relative path with {slug}
+#     description:  one-line purpose; used in listings
+#     roles:        per_instance only — maps load-bearing concepts
+#                   (problem, users, success, capability) to template sections
+#                   (header text, including leading numbering if present)
+
+name: prd
+version: 1.0.0
+
+artifacts:
+  prd:
+    template: prd.md
+    storage: per_instance
+    path_pattern: "{slug}.md"
+    description: "Long-lived product specification"
+    roles:
+      problem: "2. Product Overview"
+      users: "5. Target Users"
+      success: "3.2 Objectives and Key Results (OKR)"
+      capability: "6. Product Capabilities"
+    soft_roles:
+      constraints: "8. Non-Functional Requirements"
+      risks: "10. Risk Assessment and Mitigation"
+      phases: "9. Implementation Phases"
+
+  glossary:
+    template: glossary.md
+    storage: singleton
+    path: glossary.md
+    description: "Shared terminology used across PRDs"
+
+  personas:
+    template: personas.md
+    storage: singleton
+    path: personas.md
+    description: "Shared user personas referenced by PRDs"

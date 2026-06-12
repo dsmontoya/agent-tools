@@ -6,7 +6,7 @@ Working notes for the product-requirements-document skill. Captures decisions ma
 
 ## 1. Purpose
 
-Help users author and maintain Product Requirements Documents through an **interview-driven, iterative, multi-skill workflow**. Inspired by OpenSpec's spec-driven development model, adapted for PRDs (which are more iterative than engineering specs because they capture evolving product intent, not just code changes).
+Help users author and maintain Product Requirements Documents through an **interview-driven, iterative, multi-skill workflow**.
 
 The canonical PRD structure lives in [`TEMPLATE.md`](./TEMPLATE.md). The template is **comprehensive but selectively applied** — most PRDs won't use all 12 sections. The skill teaches the agent to omit sections that don't apply rather than mechanically filling every bracket.
 
@@ -19,7 +19,7 @@ The workflow is split across eight discrete action skills plus one umbrella skil
 | Skill | Optional? | Writes to | Mental mode |
 |---|---|---|---|
 | **prd** (umbrella) | Yes | Nothing | Entry point for vague queries about the PRD workflow; hosts shared references; routes users to the right action skill |
-| **explore** | Yes | Nothing (conversation only) | Open-ended problem exploration; mirrors OpenSpec's `/opsx:explore`; no artifacts; transitions to propose when ready |
+| **explore** | Yes | Nothing (conversation only) | Open-ended problem exploration; no artifacts; transitions to propose when ready |
 | **propose** | No | `intent.md` + `tasks.md` + `research.md` (creates; research conditional) | Interview from scratch — gather initial intent |
 | **clarify** | Yes | `intent.md` + `tasks.md` + `research.md` (modifies; may create research) | Refine an existing proposal — resolve TBDs, add tasks, respond to redirects |
 | **apply** | No | PRD file(s) | Idempotent execution — process unchecked tasks, check them off |
@@ -75,7 +75,7 @@ Skills are invokable two ways, using **the same skill name** for both:
 | Natural language | "let's update the onboarding PRD" → `prd-propose` triggers | User describes intent without slash |
 | Explicit slash | `/prd-propose` | User wants to be unambiguous |
 
-No separate `.claude/commands/` files. OpenSpec generates parallel slash commands (`opsx:archive`) because its skill names are unwieldy (`openspec-archive-change`); ours aren't. One artifact per skill, two ways to invoke it.
+No separate `.claude/commands/` files. One artifact per skill, two ways to invoke it.
 
 **Trigger priority** when signals conflict:
 
@@ -476,7 +476,7 @@ The post-apply/pre-archive timing is NOT silently inserted by `prd-apply` — ap
 
 ### 10.4 What verify does NOT do
 
-It does NOT check code (we have no code). Our coherence is purely intra-document (and inter-PRD for cross-references), not cross-artifact-to-implementation. This is the key difference from OpenSpec's verify.
+It does NOT check code (we have no code). Our coherence is purely intra-document (and inter-PRD for cross-references), not cross-artifact-to-implementation.
 
 ---
 
@@ -652,6 +652,34 @@ Trivial — interview is conversational and in-memory. User says "change my answ
 The interview is one continuous conversation. Agent gathers everything in working memory, drafts `intent.md` + `tasks.md` (and `research.md` if external data was consulted) once at the end, then asks for confirmation to write.
 
 Section-level edits after the draft are handled by **clarify** (a separate skill).
+
+### 12.12 Rendering of skip states in the PRD
+
+The skill renders the three skip states (12.7) uniformly across all PRDs, regardless of template. These rules are universal product-reality — a missing-but-not-applicable section means something different from a missing-and-needed one — so the skill owns them, not the template.
+
+| State | How it renders |
+|---|---|
+| **Omit** | Section is not rendered at all. No header, no placeholder. As if it didn't exist in the template. |
+| **N/A** | Section header is rendered, followed by one line: `N/A — <one-line reason>`. |
+| **TODO** | Section header is rendered, followed by one line: `TODO — <what would unblock>`. |
+
+Examples:
+
+```markdown
+## 10. Risk Assessment
+
+N/A — internal tool, no public-facing risks to track.
+
+## 11. Implementation Phases
+
+TODO — engineering capacity not yet confirmed; revisit after Q3 staffing.
+```
+
+**Skill-owned vs template-owned formatting.** The three skip-state rules above are the only formatting behaviors the skill imposes. Everything else — header levels (`##` vs `###`), numbering style (`1.`, `1.1`, `A.`), table-vs-prose preferences, code-block fences, list markers — is the template's responsibility. If the template uses `### 1. Problem`, the skill respects that; if it uses `# Problem` with no numbering, that too. The skill never imposes its own formatting on top of what the template prescribes.
+
+**Verify checks for empty skip reasons.** A section marked `N/A —` or `TODO —` with no reason (or with placeholder text like `<reason>`) gets flagged as WARNING by verify (section 10). Forces the author to articulate why something was skipped, not just that it was.
+
+**Apply preserves existing formatting verbatim.** When apply modifies a section that already exists, it matches the surrounding style (heading depth, list style, paragraph spacing, fence style) rather than reformatting to match the template's defaults. The template's defaults apply only when apply *creates* a new section.
 
 ---
 
@@ -898,7 +926,7 @@ Users can also invoke it on a schedule (weekly, before releases, quarterly hygie
 
 ## 15. Explore
 
-`prd-explore` is a formal skill for pre-proposal exploration, mirroring OpenSpec's `/opsx:explore`. It opens an unstructured conversation about the problem space — investigating existing PRDs, glossary, personas; comparing product approaches; clarifying what the user is actually trying to achieve before committing to a proposal.
+`prd-explore` is a formal skill for pre-proposal exploration. It opens an unstructured conversation about the problem space — investigating existing PRDs, glossary, personas; comparing product approaches; clarifying what the user is actually trying to achieve before committing to a proposal.
 
 ### 15.1 What it does
 
@@ -908,7 +936,7 @@ Users can also invoke it on a schedule (weekly, before releases, quarterly hygie
 
 ### 15.2 What it doesn't do
 
-- **No artifacts.** Same as OpenSpec. Walking away mid-explore leaves nothing behind. Anything worth preserving lives in the user's own notes during explore, or gets captured by propose at the transition.
+- **No artifacts.** Walking away mid-explore leaves nothing behind. Anything worth preserving lives in the user's own notes during explore, or gets captured by propose at the transition.
 - **No interview machinery.** Load-bearing pushback (section 12.5), product-language translation (section 12.1), implementation-language guards (section 18) — none fire during explore. Explore is exploration; the discipline kicks in at propose.
 - **No corpus modifications.** Explore is read-only across the corpus, same as verify and audit.
 
@@ -1416,7 +1444,7 @@ Verify and audit are mixed: deterministic core wrapped by an LLM layer for conte
 ### 19.3 Runtime and conventions
 
 - **Runtime:** Node 20.19+ and TypeScript via `tsx` (run `.ts` files directly, no build step).
-- **Why TypeScript:** matches OpenSpec convention (same corner of the ecosystem) and gives type safety around YAML schemas (`config.yaml`, `.prd.yaml`); minimal overhead via `tsx`.
+- **Why TypeScript:** type safety around YAML schemas (`config.yaml`, `.prd.yaml`); minimal overhead via `tsx`.
 - **Why `tsx`:** scripts stay immediately editable; no `dist/` directory to manage; no compile step on save.
 - **Dependency cap:** `js-yaml` for YAML, `tsx` (dev), `vitest` (dev). Anything more, reconsider.
 
@@ -1466,7 +1494,7 @@ Tests cover:
 - **Edge cases** — empty corpus, missing files, malformed YAML, slug collisions, partial states (some tasks checked, some not), strikethrough handling.
 - **Errors** — invalid input produces structured error output and a non-zero exit code (so downstream callers can detect failure deterministically).
 
-Tests run via Vitest (also OpenSpec's choice — keeps convention consistent). CI runs the suite on every PR; a script without tests, or with failing tests, doesn't merge.
+Tests run via Vitest. CI runs the suite on every PR; a script without tests, or with failing tests, doesn't merge.
 
 These unit tests double as **Tier 1 deterministic test oracles** (section 16.1): the same fixture-based test that verifies the script behaves correctly is what the broader test suite uses to assert "filesystem listing works." One layer of tests, two purposes.
 
@@ -1478,9 +1506,7 @@ Built-in skills only call scripts that ship with the umbrella skill. Custom temp
 
 ## 20. Open Questions
 
-To return to later:
-
-1. **PRD formatting conventions.** Header levels, section numbering, how omitted sections render.
+(All resolved — see section 21.)
 
 ## 21. Resolved
 
@@ -1511,8 +1537,9 @@ Captured here so prior decisions don't get re-litigated:
 - **Verify and audit are template-aware** — section 17.11. They check what the template *declared*, never against a hardcoded canonical structure. Missing artifacts the template didn't declare don't produce findings.
 - **Implementation-language guards** — section 18. One default policy across the whole PRD ("what the system does, not how" — no per-section register declarations; that approach was rejected as too rigid and easy to forget). Decentralized guards in each action skill (interview translation, apply self-check, verify detection); shared definitions in umbrella `REFERENCE.md` to avoid repetition (DRY). CLAUDE.md prose-based suppression for legitimate exceptions (integration constraints, regulated domains). Convert pass-through downgrades findings one tier for legacy content.
 - **Template distribution and discovery** — section 17.6. Local-only discovery; no remote registries, no fetching, no marketplace at v1. Two sibling subfolders under `.claude/skills/prd/references/templates/`: `builtin/` (ships with skill, may be overwritten on update) and `custom/` (user-managed, never touched). Both are equally editable — no warnings, no agent-side discouragement of editing `builtin/`. `.prd.yaml` references by namespace: `builtin/<name>@<version>` or `custom/<name>`. User-scope (`~/.claude/skills/`) and project-scope (`<repo>/.claude/skills/`) both scanned; project wins on name collision. Validation at session start; bad templates are inert with a quiet warning. Missing-template references emit a clear error listing available templates — never silent fallback to default.
-- **Deterministic scripts for mechanical operations** — section 19. TypeScript via `tsx` (no build step), Node 20.19+, matches OpenSpec convention. Lives in umbrella skill at `scripts/`. LLM orchestrates; scripts do filesystem listing, YAML parsing, structural validation, cross-reference resolution, status counting, slug-collision checks. Verify and audit are mixed — deterministic structural core + LLM content judgment. Scripts output JSON and double as Tier 1 test oracles (Vitest, also matching OpenSpec). Dependency cap: `js-yaml` (runtime), `tsx` + `vitest` (dev). **Every script ships with a unit test (section 19.7) — no exceptions; CI gates on it.**
+- **Deterministic scripts for mechanical operations** — section 19. TypeScript via `tsx` (no build step), Node 20.19+. Lives in umbrella skill at `scripts/`. LLM orchestrates; scripts do filesystem listing, YAML parsing, structural validation, cross-reference resolution, status counting, slug-collision checks. Verify and audit are mixed — deterministic structural core + LLM content judgment. Scripts output JSON and double as Tier 1 test oracles (Vitest). Dependency cap: `js-yaml` (runtime), `tsx` + `vitest` (dev). **Every script ships with a unit test (section 19.7) — no exceptions; CI gates on it.**
 - **Task granularity** — section 7.1. Every task in `tasks.md` is atomic: one file, one section, one operation (add/modify/remove), one concrete change, specified in enough detail that apply can execute without asking the user. "Update section 7.2" is too coarse; "Section 7.2: change session timeout from 30min to 60min" is right. Reasons: user previews changes before apply runs, apply executes without inventing details, audit trail stays meaningful after strikethrough. Check: if apply would have to ask "what specifically?" the task is too coarse — split into N.
 - **Resume behavior** — section 8.7. When an action skill is invoked while active proposals exist, the agent shows a one-line summary per proposal (slug, task counts, last-touched date) and asks what to do — but only when user intent is ambiguous. If the user names a specific slug, skip the list and proceed. Powered by `scripts/list-proposals.ts` + `scripts/proposal-status.ts`. Shared resume-prompt phrasing lives in the umbrella skill's `REFERENCE.md` so action skills don't drift. No separate "resume" skill — it's a startup behavior of any action skill.
-- **Explore as a formal skill** — section 15. Mirrors OpenSpec's `/opsx:explore`. `prd-explore` opens unstructured conversation for pre-proposal exploration: reads the corpus for context, compares product approaches, no artifacts, no interview machinery, no implementation-language guards firing. Transitions to `prd-propose` when ideas crystallize, passing accumulated context in memory so propose's interview can skip questions explore answered. Auto-triggers from natural language (read-only — safe to enter accidentally). Keeps the action set at eight skills.
+- **Explore as a formal skill** — section 15. `prd-explore` opens unstructured conversation for pre-proposal exploration: reads the corpus for context, compares product approaches, no artifacts, no interview machinery, no implementation-language guards firing. Transitions to `prd-propose` when ideas crystallize, passing accumulated context in memory so propose's interview can skip questions explore answered. Auto-triggers from natural language (read-only — safe to enter accidentally). Keeps the action set at eight skills.
 - **Version control of `changes/` — skill is git-agnostic** — section 8.6. Skill writes and reads files; it does not run git commands, suggest commits at lifecycle boundaries, or ship `.gitignore` recommendations. User decides their own version-control workflow (commit all drafts, gitignore until applied, branch-per-proposal, whatever). Lifecycle transitions are pure filesystem operations.
+- **PRD formatting conventions** — section 12.12. Skill owns three universal skip-state rendering rules: **Omit** (no render at all), **N/A** (header + `N/A — <reason>`), **TODO** (header + `TODO — <unblocker>`). Template owns everything else (header levels, numbering, prose style, list markers, code-block fences). Verify warns on empty skip reasons. Apply preserves existing formatting verbatim when modifying — template defaults apply only when apply *creates* a new section.

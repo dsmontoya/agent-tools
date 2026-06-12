@@ -1,0 +1,24 @@
+{
+  "name": "@agent-tools/prd-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic scripts for the PRD skill family. Invoked by action skills as primitives; LLM orchestrates, scripts do the mechanical work.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
