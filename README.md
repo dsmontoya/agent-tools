@@ -2,6 +2,16 @@
 
 A collection of [Claude Code](https://claude.com/claude-code) skills, following the [Agent Skills](https://agentskills.io/) format and installable via the [skills CLI](https://skills.sh/).
 
+## Install Everything
+
+To install every skill in this repo at once:
+
+```bash
+npx skills add dsmontoya/agent-tools
+```
+
+To install just one skill, use the `@<skill-name>` suffix shown next to each entry below.
+
 ## Available Skills
 
 ### [design-md](./skills/design-md)
