@@ -14,7 +14,7 @@
 - [6. Product Capabilities](#6-product-capabilities)
 - [7. Functional Requirements](#7-functional-requirements)
 - [8. Non-Functional Requirements](#8-non-functional-requirements)
-- [9. Implementation Phases](#9-implementation-phases)
+- [9. Rollout Phases](#9-rollout-phases)
 - [10. Risk Assessment and Mitigation](#10-risk-assessment-and-mitigation)
 - [11. Success Measurement](#11-success-measurement)
 - [12. Appendices](#12-appendices)
@@ -175,32 +175,23 @@ Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks)
 
 ## 7. Functional Requirements (optional)
 
-[Describes what the system must provide at a component level — data models, APIs, integrations, algorithms, services. **System-language**; requires architectural understanding to follow. Audience is primarily engineers.
+[Captures system behaviors that don't fit Section 6's user-journey shape — scheduled jobs, background reconciliation, audit logging, system-emitted events, system-to-system notifications, recurring cleanups. Things the system does where there is no user in the room.
 
-Unlike Section 6 (which describes the user experience), this section describes the technical contracts the system must meet. It focuses on *what* the system does, not *how* it's implemented — implementation details belong in engineering design documents.
+**Stay product-level.** Describe *what* the system does as observable behavior — no code, schemas, endpoints, table names, or specific tech. Implementation details belong in engineering design documents.
 
-**Skip this section** when no authoritative technical contracts are being defined. Most PRDs without significant API/integration/data-model commitments don't need it.]
+**Do not restate Section 6 Rules here.** Rules belong inline with the capability they govern. This section is only for behaviors Section 6 structurally cannot hold.
 
-### 7.1 [Core System/Component 1]
+**Skip this section** when the feature is purely user-facing. Most PRDs without background or system-triggered behaviors won't need it.]
 
-- **[Function 1]**: [Detailed description of what this function does, inputs/outputs, and business rules]
-- **[Function 2]**: [Detailed description of what this function does, inputs/outputs, and business rules]
-- **[Function 3]**: [Detailed description of what this function does, inputs/outputs, and business rules]
+### 7.1 [Behavior Area 1]
 
-### 7.2 [Core System/Component 2]
+- **[Behavior 1]**: [What the system does, when it does it, and what it produces — in observable terms]
+- **[Behavior 2]**: [What the system does, when it does it, and what it produces — in observable terms]
 
-- **[Function 1]**: [Detailed description of functionality, including error handling and edge cases]
-- **[Function 2]**: [Detailed description of functionality, including error handling and edge cases]
+### 7.2 [Behavior Area 2]
 
-### 7.3 [Integration Requirements]
-
-- **[Integration 1]**: [Description of integration needs, data flow, protocols, and technical constraints]
-- **[Integration 2]**: [Description of integration needs, data flow, protocols, and technical constraints]
-
-### 7.4 [Data Requirements]
-
-- **[Data Requirement 1]**: [Description of data structure, validation, and processing needs]
-- **[Data Requirement 2]**: [Description of data structure, validation, and processing needs]
+- **[Behavior 1]**: [What the system does, when it does it, and what it produces — in observable terms]
+- **[Behavior 2]**: [What the system does, when it does it, and what it produces — in observable terms]
 
 ---
 
@@ -210,37 +201,36 @@ Unlike Section 6 (which describes the user experience), this section describes t
 
 ### 8.1 Performance
 
-- **Response Time**: [Specific timing requirements for different operations, e.g., "Page loads within 2 seconds", "Search results in <500ms"]
-- **Throughput**: [Specific capacity requirements, e.g., "Support 1000 concurrent users", "Process 10,000 transactions per hour"]
-- **Scalability**: [How the system should handle growth, e.g., "Horizontally scalable to 10x current load", "Auto-scaling based on CPU/memory thresholds"]
-- **Availability**: [Uptime requirements and maintenance windows, e.g., "99.9% uptime", "Planned maintenance <4 hours monthly"]
+- **Response Time**: [How fast operations should feel to the user, e.g., "Page loads within 2 seconds", "Search results in under 500ms"]
+- **Capacity**: [Expected load the system should handle, e.g., "Support 1,000 concurrent users", "Handle 10,000 transactions per hour"]
+- **Growth**: [How the system should accommodate growth, e.g., "Handle 10x current load without user-visible degradation"]
+- **Availability**: [Uptime expectations and acceptable maintenance windows, e.g., "99.9% uptime", "Planned maintenance windows no longer than 4 hours per month"]
 
 ### 8.2 Security
 
-- **Authentication**: [How users prove their identity, e.g., "Multi-factor authentication required", "SSO integration", "Password complexity rules"]
-- **Authorization**: [How access is controlled, e.g., "Role-based access control", "Resource-level permissions", "Audit trail for all access"]
-- **Data Protection**: [How sensitive data is secured, e.g., "Encryption at rest and in transit", "PII data anonymization", "GDPR compliance"]
-- **Audit Logging**: [What security events are tracked, e.g., "Log all authentication attempts", "Track data access and modifications", "Immutable audit trail"]
+- **Identity**: [How users prove who they are, e.g., "Users sign in with their existing identity provider", "Step-up verification required for sensitive actions"]
+- **Access Control**: [Who can see or do what, e.g., "Administrators can manage other users; standard users cannot", "Users only see their own data"]
+- **Data Protection**: [Expectations for sensitive data, e.g., "Personal data is not visible to other users", "Payment details are never shown in full after entry", "Complies with GDPR for EU users"]
+- **Audit**: [What activity must be reviewable after the fact, e.g., "Every sign-in attempt is recorded", "Every data export is attributable to a user"]
 
 ### 8.3 Usability
 
-- **Accessibility**: [Standards compliance, e.g., "WCAG 2.1 AA compliance", "Screen reader compatible", "Keyboard navigation support"]
-- **Mobile Responsiveness**: [Mobile device support, e.g., "Responsive design for tablets and phones", "Touch-friendly interface", "Offline capability"]
-- **Browser Compatibility**: [Supported browsers and versions, e.g., "Chrome 90+, Firefox 88+, Safari 14+", "Progressive enhancement approach"]
-- **Internationalization**: [Multi-language support, e.g., "Support for English and Spanish", "RTL language support", "Localized date/time formats"]
+- **Accessibility**: [Standards the experience must meet, e.g., "Meets WCAG 2.1 AA", "Fully usable with a screen reader", "Fully usable from the keyboard"]
+- **Device Support**: [Devices and form factors that must work, e.g., "Usable on phones and tablets", "Touch-friendly targets throughout"]
+- **Browser Support**: [Which browsers must work, e.g., "Latest two versions of Chrome, Firefox, Safari, and Edge"]
+- **Languages**: [Languages and regional formats supported, e.g., "Available in English and Spanish", "Dates and currencies shown in the user's locale"]
 
 ### 8.4 Data Management
 
-- **Backup Strategy**: [Data protection requirements, e.g., "Automated daily backups", "Point-in-time recovery within 1 hour", "Cross-region backup replication"]
-- **Data Retention**: [How long data is kept, e.g., "User data retained for 7 years", "Logs purged after 90 days", "Soft delete with 30-day recovery"]
-- **Export Capabilities**: [Data portability requirements, e.g., "CSV/JSON export for all user data", "API for bulk data extraction", "Standard format compliance"]
-- **Integration APIs**: [API requirements for system integration, e.g., "RESTful APIs for all major operations", "Real-time webhooks", "Rate limiting and documentation"]
+- **Durability**: [How resilient user data must be, e.g., "User data is never lost in the event of a single-region outage", "Users can recover deleted items within 30 days"]
+- **Retention**: [How long data is kept, e.g., "User data retained for 7 years after account closure", "Activity logs retained for 90 days"]
+- **Portability**: [How users get their data out, e.g., "Users can export all their data in a machine-readable format on demand"]
 
 ---
 
-## 9. Implementation Phases
+## 9. Rollout Phases
 
-[Break down the development work into manageable phases that deliver incremental value. Each phase should be deployable and provide measurable progress toward the overall goals. Consider dependencies, risk mitigation, and early user feedback opportunities.]
+[Break the release into phases that each deliver standalone value to users. Each phase should be something the team can ship and learn from. Consider dependencies, risk mitigation, and early user feedback opportunities.]
 
 ### 9.1 Phase 1: [Phase Name] ([Months X-Y])
 
@@ -293,11 +283,11 @@ Unlike Section 6 (which describes the user experience), this section describes t
 
 [**Example Technical Risks:**
 
-- Database performance degradation under load
-- Third-party API reliability and rate limits
-- Data migration complexity and downtime
-- Browser compatibility issues
-- Security vulnerabilities]
+- The system slows down noticeably as usage grows
+- A third-party service we depend on becomes unavailable or rate-limits us
+- Existing users experience downtime or data loss during the transition
+- Users on older browsers or devices can't access the feature
+- Sensitive user data is exposed to people who shouldn't see it]
 
 ### 10.2 User Adoption Risks
 

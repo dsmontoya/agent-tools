@@ -12,7 +12,6 @@ description: |
 license: Apache-2.0
 metadata:
   author: daniel
-  version: "0.1.0"
 ---
 
 # prd-apply — Execute Proposal Tasks Against the Corpus

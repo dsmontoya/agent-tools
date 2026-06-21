@@ -11,7 +11,6 @@ description: |
 license: Apache-2.0
 metadata:
   author: daniel
-  version: "0.1.0"
 ---
 
 # prd-explore — Pre-Proposal Exploration

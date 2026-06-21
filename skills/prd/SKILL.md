@@ -13,7 +13,6 @@ description: |
 license: Apache-2.0
 metadata:
   author: daniel
-  version: "0.1.0"
 ---
 
 # PRD Skill — Umbrella
