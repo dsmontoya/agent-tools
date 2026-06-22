@@ -12,6 +12,8 @@ Template bundles carry their own versions (e.g., `builtin/prd@1`); entries note 
 - PRD template (`builtin/prd@1`): rewrote §8 Non-Functional Requirements example placeholders in product-language. Removed implementation-flavored suggestions (RESTful APIs, MFA, auto-scaling on CPU/memory, encryption at rest, browser version lists). Folded the previous "Integration APIs" sub-bullet into Data Management as "Portability."
 - PRD template (`builtin/prd@1`): renamed §9 "Implementation Phases" → "Rollout Phases".
 - PRD template (`builtin/prd@1`): rewrote §10.1 Technical Risks example list in product-language (user-observable outcomes rather than internal failure modes).
+- PRD template (`builtin/prd@1`): renamed §1.2 bullet "Portfolio fit" → "Alignment". Cleaner, symmetric with the sibling bullets ("Why now", "Dependencies"), and avoids redundancy with the parent "Strategic Rationale" heading. Description unchanged.
+- PRD template (`builtin/prd@1`): sharpened §1.2 Dependencies bullet description. Replaced the "technical and organizational" shorthand with concrete categories (foundational work, prior features, organizational prerequisites), anchored timing ("before this can ship"), and added an explicit guardrail against implementation detail ("Name the *capability* or *milestone* required, not how it's built").
 
 ### Notes
 

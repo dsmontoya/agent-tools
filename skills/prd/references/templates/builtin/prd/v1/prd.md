@@ -32,8 +32,8 @@
 ### 1.2 Strategic Rationale
 
 - **Why now**: [What makes this the right time — market shift, user signal, business need, technical enabler.]
-- **Portfolio fit**: [How this aligns with broader product strategy, roadmap, or in-flight work.]
-- **Dependencies**: [Foundational work or prior features that must be in place — technical and organizational.]
+- **Alignment**: [How this aligns with broader product strategy, roadmap, or in-flight work.]
+- **Dependencies**: [Foundational work, prior features, or organizational prerequisites that must be in place before this can ship. Name the *capability* or *milestone* required, not how it's built.]
 
 ---
 
