@@ -21,6 +21,8 @@ Template bundles carry their own versions (e.g., `builtin/prd@1`); entries note 
 - PRD template (`builtin/prd@1`): §6 intro pointed writers to §7 for "system-level technical contracts (APIs, data models, integrations)" — stale after §7's recent rescoping, which explicitly forbids those. Cross-reference now sends non-user-facing *behaviors* to §7 and *implementation details* to engineering design docs.
 - PRD template (`builtin/prd@1`): §11.4 placeholder had a misplaced period outside the bracket (`...data].` → `...data.]`).
 - PRD template (`builtin/prd@1`): §12.1 Glossary line had a stray trailing `]` with no matching opener.
+- PRD template (`builtin/prd@1`): §10.4 External Risks was missing its example block while §10.1–§10.3 each had one. Added five product-language example external risks (vendor deprecations, regulatory changes, competitor moves, partner delays, geopolitical access).
+- PRD template (`builtin/prd@1`): flattened the Table of Contents so depth is uniform. Removed the §1 and §3 subsection entries (no other top-level section listed its subsections, so they were the outliers). TOC is now top-level only.
 
 ### Notes
 

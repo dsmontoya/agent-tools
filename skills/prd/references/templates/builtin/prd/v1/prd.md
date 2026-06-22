@@ -3,12 +3,8 @@
 ## Table of Contents
 
 - [1. Context](#1-context)
-  - [1.1 Background](#11-background)
-  - [1.2 Strategic Rationale](#12-strategic-rationale)
 - [2. Product Overview](#2-product-overview)
 - [3. Goals and Objectives](#3-goals-and-objectives)
-  - [3.1 Business Goals](#31-business-goals)
-  - [3.2 Objectives and Key Results (OKR)](#32-objectives-and-key-results-okr)
 - [4. Core Concepts and Terminology](#4-core-concepts-and-terminology)
 - [5. Target Users](#5-target-users)
 - [6. Product Capabilities](#6-product-capabilities)
@@ -325,6 +321,14 @@ Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks)
 
 - **[Risk 1]**: [Detailed description and impact] — **Mitigated by** [mitigation strategy]
 - **[Risk 2]**: [Detailed description and impact] — **Mitigated by** [mitigation strategy]
+
+[**Example External Risks:**
+
+- A critical third-party service announces deprecation or pricing changes mid-rollout
+- A new regulation in a key market changes what we're allowed to ship
+- A competitor releases a comparable feature, shrinking the differentiation window
+- Vendor or partner delays push back when a dependent capability becomes available
+- Geopolitical events restrict access for users in regions we serve]
 
 ### 10.5 Risk Monitoring and Response
 
