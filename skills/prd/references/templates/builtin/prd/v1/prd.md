@@ -75,7 +75,7 @@
 
 ---
 
-## 4 Core Concepts and Terminology
+## 4. Core Concepts and Terminology
 
 [This section defines the domain-specific language and key concepts that are essential to understanding the feature. It serves as a shared vocabulary for all stakeholders and ensures everyone has the same understanding of important terms.]
 
@@ -141,7 +141,7 @@
 
 Each capability includes design rationale, expected experience, business rules, and — where the interaction of multiple conditions produces non-obvious behavior — specific edge-case scenarios.
 
-Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks). Each capability should describe a cohesive piece of functionality from the user's perspective. For system-level technical contracts (APIs, data models, integrations), use Section 7 Functional Requirements instead.]
+Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks). Each capability should describe a cohesive piece of functionality from the user's perspective. For non-user-facing system behaviors (scheduled jobs, background reconciliation, system-emitted events), use Section 7 Functional Requirements instead. Implementation details (APIs, data models, schemas, specific tech) belong in an engineering design document, not in this PRD.]
 
 ### 6.1 [Capability Area 1]
 
@@ -378,7 +378,7 @@ Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks)
 
 ### 11.4 Measurement Tools and Dashboards
 
-[Specify the tools and systems that will be used to collect and visualize measurement data].
+[Specify the tools and systems that will be used to collect and visualize measurement data.]
 
 - **Analytics Tools**: [Tools for tracking user behavior and system performance]
 - **Survey Tools**: [Tools for collecting user feedback]
@@ -391,7 +391,7 @@ Organize by user journey (e.g., Onboarding, Core Workflow, Administrative Tasks)
 
 ### 12.1 Glossary
 
-[See Glossary](./glossary.md) for definitions of key terms.]
+[See Glossary](./glossary.md) for definitions of key terms.
 
 ### 12.2 References
 

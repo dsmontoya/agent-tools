@@ -15,6 +15,13 @@ Template bundles carry their own versions (e.g., `builtin/prd@1`); entries note 
 - PRD template (`builtin/prd@1`): renamed §1.2 bullet "Portfolio fit" → "Alignment". Cleaner, symmetric with the sibling bullets ("Why now", "Dependencies"), and avoids redundancy with the parent "Strategic Rationale" heading. Description unchanged.
 - PRD template (`builtin/prd@1`): sharpened §1.2 Dependencies bullet description. Replaced the "technical and organizational" shorthand with concrete categories (foundational work, prior features, organizational prerequisites), anchored timing ("before this can ship"), and added an explicit guardrail against implementation detail ("Name the *capability* or *milestone* required, not how it's built").
 
+### Fixed
+
+- PRD template (`builtin/prd@1`): §4 heading was missing its period (`## 4 Core Concepts and Terminology` → `## 4. Core Concepts and Terminology`).
+- PRD template (`builtin/prd@1`): §6 intro pointed writers to §7 for "system-level technical contracts (APIs, data models, integrations)" — stale after §7's recent rescoping, which explicitly forbids those. Cross-reference now sends non-user-facing *behaviors* to §7 and *implementation details* to engineering design docs.
+- PRD template (`builtin/prd@1`): §11.4 placeholder had a misplaced period outside the bracket (`...data].` → `...data.]`).
+- PRD template (`builtin/prd@1`): §12.1 Glossary line had a stray trailing `]` with no matching opener.
+
 ### Notes
 
 - Non-breaking. The bundle stays at `v1`; existing PRDs continue to render. Section numbers are unchanged.
