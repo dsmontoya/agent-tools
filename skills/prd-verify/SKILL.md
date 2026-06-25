@@ -17,7 +17,7 @@ metadata:
 
 Read-only inspection of one PRD or one proposal. Outputs a tiered report in conversation. Does not write findings to disk; re-running on unchanged content produces the same report.
 
-For cross-PRD consistency checks (terminology drift, persona alignment across multiple PRDs), use [`prd-audit`](../prd-audit/SKILL.md). Verify is intra-doc; audit is inter-doc.
+For cross-PRD consistency checks (terminology drift, persona alignment across multiple PRDs), use [`prd-audit`](../prd-audit/SKILL.md). For template-version drift (whether a PRD still conforms to the current template bundle), use [`prd-template-drift`](../prd-template-drift/SKILL.md). Verify is intra-doc; audit is inter-doc; drift is doc-vs-template.
 
 See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §10 for design rationale.
 
@@ -107,6 +107,7 @@ When invoked as archive's pre-flight, the report carries the same shape; archive
 - **Does not modify the PRD or proposal.** Read-only.
 - **Does not check code.** We have no code. Coherence is intra-document (and inter-PRD for cross-references), not cross-artifact-to-implementation.
 - **Does not check across PRDs.** That's [`prd-audit`](../prd-audit/SKILL.md). Verify's scope is one artifact.
+- **Does not check template-version drift.** Verify validates the PRD against its own declared skip state; whether the current template bundle has moved on is [`prd-template-drift`](../prd-template-drift/SKILL.md)'s job.
 - **Does not reconcile findings.** Surfaces; user decides.
 - **Does not block apply.** Quality gates kick in at archive, not before. Pre-apply verify is user-initiated only.
 
