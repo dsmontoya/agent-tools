@@ -187,6 +187,28 @@ Proposals are internal scaffolding for the agent + user during a change. Once ar
 
 Content writing principles (specificity, declarative language, no vague terms, etc.) live in `SKILL.md`, not here. `SKILL_DESIGN.md` is for design decisions; writing principles are skill instructions.
 
+### 3.6 Stable anchors in intent.md
+
+`intent.md` is structured so every atomic piece of captured content is written under its own markdown heading. The heading slug (GitHub-flavored — lowercase, non-word chars to `-`, runs collapsed) becomes a stable `intent.md#<slug>` anchor that tasks in `tasks.md` can reference via transclusion (section 7.3).
+
+Structural rule per top-level intent.md section:
+
+| Top-level section | Sub-headings |
+|---|---|
+| `## Target users` | `### <persona-name>` per persona |
+| `## Product capabilities` | `### <capability-name>` per capability |
+| `## Boundaries — out of scope` | `### <boundary-name>` per item (or grouped into prose if the items are very terse) |
+| `## Risks` | `### <risk-name>` per risk |
+| `## Constraints` | `### <constraint-name>` per item |
+| `## Phases` | `### <phase-name>` per phase, if multi-phase |
+| `## Problem`, `## Success metric`, `## Trigger`, `## Context` | No sub-headings required; the section heading itself anchors the content |
+
+Headings are stable. Clarify can refine the body under a heading freely — that's intent.md's whole point (§6.3). But **renaming a heading invalidates any tasks that point to it**; rename-with-task-update follows the strikethrough rule in §6 (strike the old transclusion task, add a new one pointing to the new anchor, with a why-note explaining the rename).
+
+When intent.md content doesn't fit a single heading (e.g., a §1.2 Strategic Rationale that combines bits of `## Trigger` and `## Context`), the corresponding task uses Shape A inline content (§7.3) rather than transclusion. Anchors are an enabler, not a requirement.
+
+Why this structure: without stable anchors, the only way to point at a piece of intent.md content is by ordinal position ("capability 1"), which silently breaks when clarify reorders or inserts content. Headings convert position-dependent references into name-dependent ones — the same kind of stability that markdown linking already gives corpus PRDs.
+
 ---
 
 ## 4. Directory Structure
@@ -305,6 +327,47 @@ Clarify keeps struck-through tasks grouped together (probably at the bottom of t
 
 Removing a task in clarify does NOT auto-revert applied work. If apply has written something and the user wants it undone, clarify must add an explicit reverse task.
 
+### 6.7 Transclusion lock-in
+
+For Shape B transclusion tasks (§7.3), applied content is **locked at apply time**. Apply reads `intent.md#<anchor>` once, writes the body into the corpus PRD, and marks the task `[x]`. Subsequent edits to `intent.md` do NOT silently propagate to the corpus.
+
+Propagating an intent.md edit into the corpus requires an explicit new task, the same way any other corpus change does — clarify applies the strikethrough rule (§6.1) and adds a re-transclude:
+
+```markdown
+- [x] ~~Section 5.2: transclude intent.md#short-sitting-list-keeper~~
+- [ ] Section 5.2: re-transclude intent.md#short-sitting-list-keeper
+      — added mobile-only users to persona scope
+```
+
+Why this lock-in: without it, intent.md becomes a live edit surface — any tweak silently rewrites the corpus on next apply. That breaks two things:
+
+1. **§6.3's "applied tasks are facts."** A corpus change without a corresponding task leaves the audit trail with a hole.
+2. **§12.3's "intent.md prose evolves freely."** If every intent.md edit risks rewriting the shipped PRD, that freedom evaporates. Clarify would have to grow strikethrough rules for intent.md too — exactly what §6.3 chose against.
+
+Lock-in keeps intent.md a free editing space *and* keeps the corpus stable. The cost of propagating is one explicit task — the same cost any other corpus change already has.
+
+### 6.8 Why-note on clarify-generated tasks
+
+Tasks created by clarify carry a short why-note when the prompt for the change isn't visible from the task content alone. Format: an em dash and a short phrase appended to the task line (or, if the task body is multi-line, on its own indented line under the body).
+
+```markdown
+- [x] ~~Section 5.2: transclude intent.md#short-sitting-list-keeper~~
+- [ ] Section 5.2: re-transclude intent.md#short-sitting-list-keeper
+      — added mobile-only users to persona scope
+```
+
+| Task origin | Why-note required? |
+|---|---|
+| Propose-generated (initial capture) | No — there's no prior state to motivate against |
+| Clarify-generated re-transclude (Shape B) | **Required** — Shape B doesn't show prose, so the diff is invisible without a note |
+| Clarify-generated supersession (Shape A inline, replacing a struck task) | **Recommended** — diff between struck and new content often implies why, but a note makes it explicit |
+| Clarify-generated brand-new task | **Recommended** — explains what prompted the addition |
+| Pure-typographical cleanup (Shape A) | Optional — diff explains itself |
+
+Length discipline: one short phrase, not a paragraph. Mirrors the rest of the skill's qualitative-not-numeric content guidance.
+
+The note is for human audit, not for apply. Apply ignores why-notes when executing.
+
 ---
 
 ## 7. Idempotent Apply
@@ -340,10 +403,39 @@ Apply can run multiple times in sequence:
 
 1. Reads `tasks.md`.
 2. Identifies unchecked, non-struck tasks (using `scripts/proposal-status.ts`).
-3. For each: re-reads the relevant PRD file (so it sees current state, not stale assumptions), executes the change, marks the task `[x]`.
-4. Surfaces discrepancies if the PRD has changed unexpectedly (e.g., a task says "change rule X to Y" but X is no longer present).
+3. For each: detects task shape (§7.3), re-reads the relevant PRD file, executes the change, marks the task `[x]`.
+   - **Shape A (inline)**: writes the inline content into the target section.
+   - **Shape B (transclude)**: reads the body under `intent.md#<anchor>`, writes it into the target section. Lock-in semantics per §6.7.
+4. Surfaces discrepancies in either direction:
+   - Shape A: a task says "change rule X to Y" but X is no longer present in the PRD.
+   - Shape B: the anchor named by the task does not exist in `intent.md`, or its body is empty.
 
 This makes the workflow resilient: `propose → apply → clarify → apply → clarify → apply → archive` is supported with no special handling.
+
+### 7.3 Two task shapes
+
+Tasks come in two shapes. Both are atomic per §7.1; neither asks apply to invent content.
+
+| Shape | Format | Used when |
+|---|---|---|
+| **A — Inline** | `- [ ] Section X.Y: write: <content>` (multi-line continuation allowed) | Content is net-new — Rules blocks, KRs, success-measurement specifics, explicit Omit/N/A/TODO directives, multi-source synthesis (a single §X.Y that pulls from several intent.md sections) |
+| **B — Transclude** | `- [ ] Section X.Y: transclude intent.md#<anchor>` | A single heading's body in intent.md is a 1:1 fit for the target template section — personas, risks, problem statement, single-source capability prose |
+
+Apply, on Shape B, reads the body under `intent.md#<anchor>` (everything from the heading line up to the next heading at the same or higher level) and writes it into the target section. The heading title from intent.md is used as the entry label; the surrounding section's prevailing format (bullet+label, sub-heading, prose) guides rendering, consistent with §12.12 "match surrounding style."
+
+Why two shapes:
+
+1. **Single source of truth for prose.** Content captured in the interview lives in intent.md once. Shape B references it; Shape A is reserved for content that doesn't already exist there.
+2. **No duplicated effort at propose time.** Without Shape B, propose has to serialize captured prose into intent.md *and* re-serialize it into tasks.md. With Shape B, propose writes it once.
+3. **Determinism preserved.** Shape A executes inline content verbatim. Shape B executes a named anchor's body verbatim. Neither requires apply to paraphrase or guess.
+
+When to use which:
+
+- Default to Shape A for net-new content the template requires but the interview doesn't naturally produce (Rules blocks, KR phrasings, measurement details, skip-state directives).
+- Default to Shape B when one intent.md heading's body is a clean 1:1 fit for the target section.
+- One task = one section change = one content unit. A section with three personas gets three Shape B tasks (one per persona).
+
+Why not mix shapes in a single task: clarity. A task that says "transclude X plus this additional inline content" loses atomicity — apply now has to splice. Split into two tasks instead, or use Shape A and inline the whole thing.
 
 ---
 

@@ -43,10 +43,10 @@ Three dimensions of inspection, plus a fourth for proposal-driven changes:
 
 | Dimension | What it checks |
 |---|---|
-| **Completeness** | All tasks checked or struck; no leftover `[TBD]` markers; cross-references resolve; glossary refs valid; citations in `intent.md` resolve to entries in `research.md`. |
+| **Completeness** | All tasks checked or struck; no leftover `[TBD]` markers; cross-references resolve; glossary refs valid; citations in `intent.md` resolve to entries in `research.md`; Shape B transclude tasks point at anchors that exist in `intent.md`. |
 | **Correctness** | Template structure followed (per the active bundle); rules declarative (not Given-When-Then); priorities from the valid set; goals have key results with baseline/target/frequency; vague language detected ("fast," "easy," "good," "intuitive"); N/A sections have explicit reasons. |
 | **Coherence** | Capabilities trace to goals; functional requirements support capabilities; personas referenced exist in Target Users (or in `personas.md`); phases reference real features. |
-| **Proposal alignment** (proposal-driven only) | Does the PRD reflect what `tasks.md` said it would? |
+| **Proposal alignment** (proposal-driven only) | Does the PRD reflect what `tasks.md` said it would? Transclude tasks (Shape B) match the current body under the named anchor in `intent.md` only if the task is still unchecked — checked transcludes are facts (per [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §6.7) and don't have to match current intent.md content. |
 
 ## How to Run
 
@@ -72,8 +72,8 @@ Findings from the scripts feed into the report. Semantic checks (vague language,
 
 | Tier | Blocks archive? | Examples |
 |---|---|---|
-| **CRITICAL** | Yes (override with `--abandon`) | Unchecked tasks; broken cross-refs; missing required sections; CRITICAL implementation language (code, SQL, endpoints) |
-| **WARNING** | No | Vague success criteria; orphan capabilities; missing rationale; WARNING implementation language (tech names, impl verbs) |
+| **CRITICAL** | Yes (override with `--abandon`) | Unchecked tasks; broken cross-refs; broken intent.md anchors in Shape B transclude tasks; missing required sections; CRITICAL implementation language (code, SQL, endpoints) |
+| **WARNING** | No | Vague success criteria; orphan capabilities; missing rationale; WARNING implementation language (tech names, impl verbs); re-transclude tasks missing a why-note |
 | **SUGGESTION** | No | Style polish; missing optional sections that would add value; stale `research.md` entries (>90 days) |
 
 Implementation-language tiers come from [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3.
@@ -114,5 +114,5 @@ When invoked as archive's pre-flight, the report carries the same shape; archive
 ## Shared References
 
 - [`../prd/SKILL.md`](../prd/SKILL.md) — umbrella routing.
-- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §10 (verify design), §5.3 (archive pre-flight), §14.1 (verify vs audit).
-- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3 (implementation-language patterns), §6 (skip states), §7 (load-bearing sections).
+- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6 (intent.md anchors), §6 (strikethrough, lock-in, why-notes), §7.3 (task shapes), §10 (verify design), §5.3 (archive pre-flight), §14.1 (verify vs audit).
+- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3 (implementation-language patterns), §6 (skip states), §7 (load-bearing sections), §9 (intent.md anchors), §10 (task shapes), §11 (transclusion lock-in), §12 (why-note convention).

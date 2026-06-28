@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { proposalStatus } from "../proposal-status.ts";
-import { parseTasks, countTasks } from "../lib/tasks.ts";
+import { parseTasks, countTasks, classifyTaskShape } from "../lib/tasks.ts";
 import { makeTempRoot, cleanupTempRoot, writeFixtureFile, writeFixtureDir } from "./helpers.ts";
 import { join } from "node:path";
 
@@ -77,6 +77,67 @@ describe("countTasks", () => {
       superseded: 0,
       applied_superseded: 0,
       pending_superseded: 0,
+    });
+  });
+});
+
+describe("classifyTaskShape", () => {
+  it("identifies a Shape A inline task without a why-note", () => {
+    const result = classifyTaskShape("Section 7.2: write: timeout = 60min");
+    expect(result).toEqual({ kind: "inline" });
+  });
+
+  it("captures a why-note on an inline task", () => {
+    const result = classifyTaskShape(
+      "Section 7.2: write: timeout = 60min — user feedback indicated 30min was too aggressive",
+    );
+    expect(result).toMatchObject({
+      kind: "inline",
+      whyNote: "user feedback indicated 30min was too aggressive",
+    });
+  });
+
+  it("identifies a Shape B transclude task", () => {
+    const result = classifyTaskShape(
+      "Section 5.2: transclude intent.md#short-sitting-list-keeper",
+    );
+    expect(result).toEqual({
+      kind: "transclude",
+      source: "intent.md",
+      anchor: "short-sitting-list-keeper",
+      reTransclude: false,
+    });
+  });
+
+  it("identifies a re-transclude task and its why-note", () => {
+    const result = classifyTaskShape(
+      "Section 5.2: re-transclude intent.md#short-sitting-list-keeper — added mobile-only users to persona scope",
+    );
+    expect(result).toMatchObject({
+      kind: "transclude",
+      source: "intent.md",
+      anchor: "short-sitting-list-keeper",
+      reTransclude: true,
+      whyNote: "added mobile-only users to persona scope",
+    });
+  });
+
+  it("treats a task whose body mentions transclude but lacks a reference as inline", () => {
+    // "The transcluded body" is prose, not a directive — no anchor.
+    const result = classifyTaskShape(
+      "Section 5.2: write: The transcluded body becomes the persona description.",
+    );
+    expect(result).toEqual({ kind: "inline" });
+  });
+
+  it("accepts the re-transclude verb in either hyphenated form", () => {
+    expect(classifyTaskShape("Section X: retransclude intent.md#a")).toMatchObject({
+      kind: "transclude",
+      reTransclude: true,
+    });
+    expect(classifyTaskShape("Section X: re-transclude intent.md#a")).toMatchObject({
+      kind: "transclude",
+      reTransclude: true,
     });
   });
 });

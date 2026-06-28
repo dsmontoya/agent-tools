@@ -192,3 +192,84 @@ For load-bearing sections only. Max two pushbacks per question; if still thin, m
 | "It lets users manage their settings." (Capability) | "Walk me through the experience — first thing they see, what they do, what changes for them?" |
 
 See [`../SKILL_DESIGN.md`](../SKILL_DESIGN.md) §12.5.
+
+---
+
+## 9. intent.md Anchor Structure
+
+`intent.md` is structured so every atomic piece of captured content sits under its own markdown heading. The heading slug (GitHub-flavored) becomes a stable `intent.md#<slug>` anchor that `tasks.md` can reference via transclusion (§10 below).
+
+| Top-level section          | Sub-headings                                                          |
+| -------------------------- | --------------------------------------------------------------------- |
+| `## Target users`          | `### <persona-name>` per persona                                      |
+| `## Product capabilities`  | `### <capability-name>` per capability                                |
+| `## Boundaries`            | `### <boundary-name>` per item, or grouped prose if items are terse   |
+| `## Risks`                 | `### <risk-name>` per risk                                            |
+| `## Constraints`           | `### <constraint-name>` per item                                      |
+| `## Phases`                | `### <phase-name>` per phase, if multi-phase                          |
+| `## Problem`, `## Success metric`, `## Trigger`, `## Context` | No sub-headings required; the section heading anchors the content |
+
+**Stability rule.** Clarify can refine the body under a heading freely. Renaming a heading invalidates any tasks pointing to it — rename-with-task-update follows the strikethrough rule (`SKILL_DESIGN.md` §6), with a why-note explaining the rename.
+
+See [`../SKILL_DESIGN.md`](../SKILL_DESIGN.md) §3.6.
+
+---
+
+## 10. Two Task Shapes
+
+Tasks come in two shapes. Both are atomic; neither asks apply to invent content.
+
+| Shape           | Format                                                            | Used when                                                                                  |
+| --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **A — Inline** | `- [ ] Section X.Y: write: <content>` (multi-line allowed)        | Content is net-new (Rules, KRs, measurement specifics, Omit/N/A/TODO directives, multi-source synthesis) |
+| **B — Transclude** | `- [ ] Section X.Y: transclude intent.md#<anchor>`             | A single intent.md heading's body is a 1:1 fit for the target section (personas, risks, problem statement, single-source capability prose) |
+
+**Shape selection at propose / clarify time:**
+
+- Default to Shape A when the template requires content the interview doesn't naturally produce (Rules, KR phrasings, measurement specs, skip-state directives).
+- Default to Shape B when one intent.md heading's body slots cleanly into the target section.
+- One task = one section change = one content unit. Three personas → three Shape B tasks.
+- Never mix shapes in a single task. If a task would require both, split it.
+
+**Apply behavior:**
+
+- Shape A: write the inline content into the target section.
+- Shape B: read the body under `intent.md#<anchor>` (heading line through the next heading at same or higher level), write it into the target section. The heading title becomes the entry label; the surrounding section's prevailing format guides rendering, consistent with §6 "match surrounding style."
+
+See [`../SKILL_DESIGN.md`](../SKILL_DESIGN.md) §7.3.
+
+---
+
+## 11. Transclusion Lock-In
+
+Shape B tasks snapshot intent.md content into the corpus **at apply time**. Subsequent edits to intent.md do NOT silently propagate to the corpus.
+
+To propagate an intent.md edit into the corpus, clarify follows the strikethrough rule and adds an explicit re-transclude task:
+
+```markdown
+- [x] ~~Section 5.2: transclude intent.md#short-sitting-list-keeper~~
+- [ ] Section 5.2: re-transclude intent.md#short-sitting-list-keeper
+      — added mobile-only users to persona scope
+```
+
+Why: corpus changes must always be tracked by a task. Allowing silent propagation would let intent.md edits change the corpus without a corresponding `[x]` task, breaking the "applied tasks are facts" semantic and the audit trail.
+
+See [`../SKILL_DESIGN.md`](../SKILL_DESIGN.md) §6.7.
+
+---
+
+## 12. Why-Note Convention on Clarify-Generated Tasks
+
+Tasks created by clarify carry a short why-note when the prompt for the change isn't visible from the task content alone. Format: an em dash and a short phrase appended to the task line (or, if the task is multi-line, on its own indented line under the body).
+
+| Task origin                                         | Why-note required?                                                            |
+| --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Propose-generated (initial capture)                 | No — no prior state to motivate against                                       |
+| Clarify-generated re-transclude (Shape B)           | **Required** — Shape B doesn't show prose, so the diff is invisible           |
+| Clarify-generated supersession (Shape A inline)     | **Recommended** — diff often implies why, but a note makes it explicit        |
+| Clarify-generated brand-new task                    | **Recommended** — explains what prompted the addition                         |
+| Pure-typographical cleanup (Shape A)                | Optional — diff explains itself                                               |
+
+The note is for human audit, not for apply. Apply ignores why-notes when executing.
+
+See [`../SKILL_DESIGN.md`](../SKILL_DESIGN.md) §6.8.

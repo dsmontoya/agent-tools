@@ -200,4 +200,77 @@ describe("lifecycle simulation: propose → apply → archive", () => {
     expect(status.counts.applied_superseded).toBe(1);
     expect(status.counts.pending).toBe(1);
   });
+
+  it("Shape B transclude: anchor resolves and re-transclude supersession is counted", async () => {
+    // Walks a proposal containing a Shape B transclude task. Demonstrates:
+    //   (1) the anchor resolves from intent.md to its body,
+    //   (2) re-transclude on a checked task follows the strikethrough rule,
+    //   (3) proposal-status counts the resulting structure correctly.
+    const { resolveAnchor } = await import("../resolve-anchor.ts");
+    const slug = "anonymous-todos";
+    const proposalDir = join(root, "changes", slug);
+    const tasksPath = join(proposalDir, "tasks.md");
+    const intentPath = writeFixtureFile(
+      proposalDir,
+      "intent.md",
+      [
+        "# Intent — anonymous todo lists",
+        "",
+        "## Target users",
+        "",
+        "### Short-sitting list-keeper",
+        "Someone with a TODO need bounded to one sitting.",
+        "",
+      ].join("\n"),
+    );
+    writeFixtureFile(
+      proposalDir,
+      "tasks.md",
+      [
+        "# Tasks",
+        "",
+        "- [ ] Section 5.2: transclude intent.md#short-sitting-list-keeper",
+        "",
+      ].join("\n"),
+    );
+
+    // (1) The anchor resolves to its body.
+    const resolved = resolveAnchor({
+      source: intentPath,
+      slug: "short-sitting-list-keeper",
+    });
+    expect(resolved.exists).toBe(true);
+    if (resolved.exists) {
+      expect(resolved.body).toContain("one sitting");
+    }
+
+    // Simulate apply marking the transclude task done.
+    writeFileSync(
+      tasksPath,
+      readFileSync(tasksPath, "utf8").replace(
+        "- [ ] Section 5.2: transclude intent.md#short-sitting-list-keeper",
+        "- [x] Section 5.2: transclude intent.md#short-sitting-list-keeper",
+      ),
+      "utf8",
+    );
+
+    // (2) Clarify supersedes the applied transclude with a re-transclude
+    //     carrying a why-note.
+    writeFileSync(
+      tasksPath,
+      [
+        "# Tasks",
+        "",
+        "- [x] ~~Section 5.2: transclude intent.md#short-sitting-list-keeper~~",
+        "- [ ] Section 5.2: re-transclude intent.md#short-sitting-list-keeper — refined wording",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    // (3) Status counts: one applied-superseded, one pending.
+    const status = proposalStatus({ proposalDir });
+    expect(status.counts.applied_superseded).toBe(1);
+    expect(status.counts.pending).toBe(1);
+  });
 });

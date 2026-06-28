@@ -124,12 +124,50 @@ If the interview turns on data the user doesn't have on hand (current adoption, 
 At end of interview, write under `<root>/changes/<slug>/`:
 
 ```
-intent.md     # captured facts + rationale (the why)
+intent.md     # captured facts + rationale (the why), with stable anchored headings
 tasks.md      # atomic file-by-file, section-by-section edits (the what)
 research.md   # conditional — external evidence, if any was consulted
 ```
 
-Each task is atomic — one file, one section, one operation, one concrete change. See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7.1 for the granularity bar. Coarse tasks become apply-time guesses, which is exactly what we're trying to avoid.
+### intent.md structure — stable anchors
+
+`intent.md` is written so every atomic piece of captured content sits under its own markdown heading. The heading slug (GitHub-flavored) becomes a stable `intent.md#<slug>` anchor that tasks reference via transclusion (see Shape B below).
+
+| Top-level section | Sub-headings |
+|---|---|
+| `## Target users` | `### <persona-name>` per persona |
+| `## Product capabilities` | `### <capability-name>` per capability |
+| `## Boundaries` | `### <boundary-name>` per item (or grouped prose if items are terse) |
+| `## Risks` | `### <risk-name>` per risk |
+| `## Constraints` | `### <constraint-name>` per item |
+| `## Phases` | `### <phase-name>` per phase, if multi-phase |
+| `## Problem`, `## Success metric`, `## Trigger`, `## Context` | No sub-headings required; the section heading anchors the content |
+
+See [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §9 and [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6 for the full anchor rules.
+
+### tasks.md shape — atomic, in two shapes
+
+Each task is atomic — one file, one section, one operation, one concrete change. See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7.1 for the granularity bar.
+
+Tasks come in two shapes; propose picks the right one per content unit:
+
+| Shape | Format | Used when |
+|---|---|---|
+| **A — Inline** | `- [ ] Section X.Y: write: <content>` | Content is net-new — Rules blocks, KRs, measurement specifics, Omit/N/A/TODO directives, multi-source synthesis |
+| **B — Transclude** | `- [ ] Section X.Y: transclude intent.md#<anchor>` | One intent.md heading's body is a 1:1 fit for the target section (personas, risks, problem statement, single-source capability prose) |
+
+**Why two shapes:** intent.md is the single source of truth for prose captured during the interview. Shape B lets `tasks.md` reference that prose by anchor instead of re-serializing it. Apply executes Shape B by reading the named heading's body verbatim — no paraphrasing.
+
+**Picking the shape:**
+
+- Default to Shape A when the template requires content the interview doesn't naturally produce (Rules under capabilities, KR phrasings, measurement details, explicit Omit/N/A/TODO directives).
+- Default to Shape B when one intent.md heading's body cleanly fits the target section. Persona descriptions and risk descriptions almost always qualify.
+- One task = one section change = one content unit. Three personas → three Shape B tasks (one per persona).
+- Never mix shapes inside a single task. If a task would require both inline content and a transclude, split it into two tasks.
+
+See [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §10 and [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7.3 for the full shape rules.
+
+### Surfacing the next step
 
 After writing, surface the next step:
 
@@ -138,5 +176,5 @@ After writing, surface the next step:
 ## Shared References
 
 - [`../prd/SKILL.md`](../prd/SKILL.md) — umbrella routing.
-- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3, §5, §9, §11, §12, §13 — proposal artifacts, lifecycle, collision detection, external sources, interview design, existing-PRD handling.
-- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) — writing principles, load-bearing sections, pushback patterns, implementation-language patterns, skip states.
+- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3 (artifacts, including §3.6 intent.md anchors), §5 (lifecycle), §7.3 (task shapes), §9 (collisions), §11 (external sources), §12 (interview), §13 (existing-PRD handling).
+- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) — writing principles, load-bearing sections, pushback patterns, implementation-language patterns, skip states, intent.md anchors (§9), two task shapes (§10).

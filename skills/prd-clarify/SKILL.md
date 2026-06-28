@@ -40,9 +40,10 @@ Auto-triggers safely from natural language. Writes are scoped to `<root>/changes
 ## What This Skill Does
 
 1. **Locates the proposal.** Active proposal in `<root>/changes/`. If many, show the resume list. If the user names a slug, jump straight to it.
-2. **Modifies `intent.md` freely.** Prose; rewrite as understanding improves. No strikethrough — the audit trail lives in git history, not in the file.
-3. **Applies the strikethrough rule to `tasks.md`** when modifying tasks that have already been applied. Unchecked tasks can be edited or deleted freely; checked tasks must be struck through, with a replacement task added beneath.
-4. **Appends to `research.md`** when new external data is consulted. Re-fetched values strike through the old entry and add a new dated one. Preserves the audit trail.
+2. **Modifies `intent.md` freely.** Prose; rewrite as understanding improves. No strikethrough — the audit trail lives in git history, not in the file. Heading structure follows the anchor rules in [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6.
+3. **Applies the strikethrough rule to `tasks.md`** when modifying tasks that have already been applied. Unchecked tasks can be edited or deleted freely; checked tasks must be struck through, with a replacement task added beneath. Re-transclude tasks (Shape B) carry a required why-note.
+4. **Picks the right task shape.** Same rule as propose — Shape A inline for net-new content, Shape B transclude for content already living under an intent.md anchor. See [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §10.
+5. **Appends to `research.md`** when new external data is consulted. Re-fetched values strike through the old entry and add a new dated one. Preserves the audit trail.
 
 ## What This Skill Does NOT Do
 
@@ -64,12 +65,44 @@ Example:
 
 ```markdown
 - [x] ~~Add rule "session timeout = 30min" to section 7.2~~
-- [ ] Update section 7.2: change session timeout rule from 30min to 60min
+- [ ] Update section 7.2: change session timeout rule from 30min to 60min — user feedback indicated 30min was too aggressive
 ```
 
 Ergonomic detail: keep struck-through tasks grouped (probably at the bottom of their section, or under a small "Superseded" subhead) so unchecked items stay visually prominent. See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §6.5.
 
 `intent.md` does NOT use strikethrough — prose should reflect current understanding; the audit trail lives in git.
+
+## Transclusion Lock-In
+
+Shape B transclusion tasks (`- [x] Section X.Y: transclude intent.md#<anchor>`) **snapshot intent.md content into the corpus at apply time**. Subsequent edits to intent.md do NOT silently propagate to the corpus.
+
+To propagate an intent.md edit into the corpus, clarify follows the strikethrough rule and adds an explicit re-transclude task:
+
+```markdown
+- [x] ~~Section 5.2: transclude intent.md#short-sitting-list-keeper~~
+- [ ] Section 5.2: re-transclude intent.md#short-sitting-list-keeper
+      — added mobile-only users to persona scope
+```
+
+Why this matters: without lock-in, intent.md becomes a live edit surface — any tweak silently rewrites the corpus on next apply, leaving the audit trail with a hole (no corresponding `[x]` task). Lock-in preserves both intent.md's freedom to evolve (§6.3) and tasks.md's "applied tasks are facts" semantic (§6.3).
+
+Heading renames in intent.md follow the same pattern: if you rename `### Short-sitting list-keeper` to something else, every transclusion task pointing at the old anchor must be struck through, and replacements added under the new anchor. See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6 and §6.7.
+
+## Why-Note Convention
+
+Clarify-generated tasks carry a short why-note when the prompt for the change isn't visible from the task content alone. Format: an em dash and a short phrase appended to the task line (or, if the task body is multi-line, on its own indented line under the body).
+
+| Task origin | Why-note required? |
+|---|---|
+| Propose-generated (initial capture) | No — no prior state to motivate against |
+| Re-transclude (Shape B) | **Required** — Shape B doesn't show prose, so the diff is invisible |
+| Supersession of an inline (Shape A) task | **Recommended** — diff often implies why, but a note makes it explicit |
+| Brand-new task added during clarify | **Recommended** — explains what prompted the addition |
+| Pure-typographical cleanup (Shape A) | Optional — diff explains itself |
+
+Keep it short — one phrase, not a paragraph. The note is for human audit, not for apply; apply ignores why-notes when executing.
+
+See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §6.8 and [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §12.
 
 ## The Clarify Flow
 
@@ -82,5 +115,5 @@ Ergonomic detail: keep struck-through tasks grouped (probably at the bottom of t
 ## Shared References
 
 - [`../prd/SKILL.md`](../prd/SKILL.md) — umbrella routing.
-- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §5 (lifecycle), §6 (strikethrough), §11 (external sources), §12 (interview).
-- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) — writing principles, load-bearing sections, resume-prompt phrasing, implementation-language patterns.
+- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6 (intent.md anchors), §5 (lifecycle), §6 (strikethrough, lock-in, why-notes), §7.3 (task shapes), §11 (external sources), §12 (interview).
+- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) — writing principles, load-bearing sections, resume-prompt phrasing, implementation-language patterns, intent.md anchors (§9), two task shapes (§10), transclusion lock-in (§11), why-note convention (§12).

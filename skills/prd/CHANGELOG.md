@@ -6,7 +6,21 @@ Template bundles carry their own versions (e.g., `builtin/prd@1`); entries note 
 
 ## Unreleased
 
+### Added
+
+- **Stable anchors in `intent.md`.** Every atomic piece of captured content (persona, risk, capability, boundary, constraint, phase) is now written under its own markdown heading. The heading slug becomes a stable `intent.md#<slug>` anchor referenceable from `tasks.md`. See `SKILL_DESIGN.md` §3.6 and `REFERENCE.md` §9.
+- **Two task shapes in `tasks.md`.** Shape A (inline content) and Shape B (`transclude intent.md#<anchor>`). Shape B lets `tasks.md` reference content captured in `intent.md` instead of re-serializing it. Apply reads the anchored body verbatim — no paraphrasing. See `SKILL_DESIGN.md` §7.3 and `REFERENCE.md` §10.
+- **Transclusion lock-in.** Applied Shape B tasks snapshot intent.md content into the corpus at apply time. Subsequent edits to intent.md do not silently propagate; propagating requires a clarify-generated `re-transclude` task, following the existing strikethrough rule. See `SKILL_DESIGN.md` §6.7 and `REFERENCE.md` §11.
+- **Why-note convention on clarify-generated tasks.** Tasks created during clarify carry a short why-note (em dash + phrase) when the prompt for the change isn't visible from the task content alone. Required for re-transcludes (Shape B doesn't show prose diffs); recommended for inline supersessions and brand-new additions; optional for typographical cleanup. See `SKILL_DESIGN.md` §6.8 and `REFERENCE.md` §12.
+- **`scripts/resolve-anchor.ts`.** New deterministic CLI used by `prd-apply` and `prd-verify` to resolve an `intent.md` anchor to its body, or report that the anchor doesn't exist. Backed by `lib/markdown.ts#extractSectionBody` and tested under `__tests__/resolve-anchor.test.ts`.
+- **`lib/tasks.ts#classifyTaskShape`.** New helper that distinguishes Shape A inline tasks from Shape B transclude tasks (including `re-transclude`) and captures any trailing why-note. Used by verify to detect broken transclusion anchors as CRITICAL.
+
 ### Changed
+
+- `prd-propose` SKILL.md: documents the new `intent.md` anchor structure and the two-shape task model; picks the shape based on whether content is net-new (Shape A) or sourced from a single intent.md heading (Shape B).
+- `prd-clarify` SKILL.md: documents the transclusion lock-in semantics, the re-transclude pattern, and the why-note convention; both apply during the strikethrough handling of applied transclude tasks.
+- `prd-apply` SKILL.md: detects task shape; resolves Shape B anchors via `resolve-anchor.ts` and writes the body into the target section; surfaces missing-anchor as a discrepancy with three resolutions (apply as written, edit the task, pause for clarify).
+- `prd-verify` SKILL.md: broken Shape B anchors on unchecked tasks are now CRITICAL findings; re-transcludes missing a why-note are flagged as WARNING.
 
 - PRD template (`builtin/prd@1`): rescoped §7 Functional Requirements to non-user-facing system behaviors only (scheduled jobs, audit logging, system-emitted events, background reconciliation). Removed "data models, APIs, integrations, algorithms" framing. Section intro now explicitly forbids code, schemas, endpoints, and tech names, and explicitly forbids restating §6 Rules.
 - PRD template (`builtin/prd@1`): rewrote §8 Non-Functional Requirements example placeholders in product-language. Removed implementation-flavored suggestions (RESTful APIs, MFA, auto-scaling on CPU/memory, encryption at rest, browser version lists). Folded the previous "Integration APIs" sub-bullet into Data Management as "Portability."

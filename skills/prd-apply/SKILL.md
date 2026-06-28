@@ -38,11 +38,34 @@ See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7 for the apply loop an
 
 1. **Locates the proposal.** Active proposal in `<root>/changes/`. If many, show the resume list (per [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §4). If one, use it. If none, tell the user.
 2. **Reads `tasks.md`.** Identifies unchecked, non-struck tasks via [`proposal-status.ts`](../prd/scripts/proposal-status.ts). Each task names one file, one section, one operation, one concrete change — that granularity is required (see [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7.1).
-3. **Re-reads the PRD before writing.** For each task, reads the current content of the affected file/section. If the world has changed unexpectedly (another proposal applied in the interim, manual user edit), surfaces the discrepancy rather than blindly executing.
-4. **Checks read-only paths.** Runs [`check-readonly.ts`](../prd/scripts/check-readonly.ts) for each target. If a task would write to a read-only path, skip it and surface — propose should not have generated such a task, but enforce defensively.
-5. **Executes the change.** Edits the PRD file. Preserves existing formatting verbatim — heading depth, list style, paragraph spacing, fence style — to match surrounding content. Template defaults apply only when apply *creates* a new section.
-6. **Self-checks for implementation language before writing.** Strip or rephrase any implementation specifics that slipped through interview translation (CRITICAL tier — code, SQL, endpoints, internal structures). See [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3.
-7. **Marks the task `[x]`.** After successful execution.
+3. **Detects task shape.** Each task is either Shape A (inline content) or Shape B (transclude from `intent.md`). See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §7.3 and [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §10.
+4. **Re-reads the PRD before writing.** For each task, reads the current content of the affected file/section. If the world has changed unexpectedly (another proposal applied in the interim, manual user edit), surfaces the discrepancy rather than blindly executing.
+5. **For Shape B tasks, resolves the anchor.** Reads `intent.md` and extracts the body under the named heading (from the heading line through the next heading at the same or higher level). If the anchor doesn't exist or the body is empty, surfaces as a discrepancy — does NOT invent content.
+6. **Checks read-only paths.** Runs [`check-readonly.ts`](../prd/scripts/check-readonly.ts) for each target. If a task would write to a read-only path, skip it and surface — propose should not have generated such a task, but enforce defensively.
+7. **Executes the change.** Edits the PRD file. Preserves existing formatting verbatim — heading depth, list style, paragraph spacing, fence style — to match surrounding content. Template defaults apply only when apply *creates* a new section. For Shape B, the heading title from `intent.md` becomes the entry label; the surrounding section's prevailing format guides rendering.
+8. **Self-checks for implementation language before writing.** Strip or rephrase any implementation specifics that slipped through interview translation (CRITICAL tier — code, SQL, endpoints, internal structures). See [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3.
+9. **Marks the task `[x]`.** After successful execution. Apply ignores any why-note on the task; the note is for human audit only.
+
+## The Two Task Shapes
+
+Apply must distinguish them:
+
+| Shape | Format | What apply does |
+|---|---|---|
+| **A — Inline** | `- [ ] Section X.Y: write: <content>` | Writes the inline content into the target section. |
+| **B — Transclude** | `- [ ] Section X.Y: transclude intent.md#<anchor>` | Reads the body under `intent.md#<anchor>`, writes it into the target section. |
+
+Apply never paraphrases either shape. Shape A executes the inline content as-given (with formatting matched to surrounding style). Shape B executes the anchored body as-given (with the heading title used as the entry label).
+
+If a task uses any shape apply doesn't recognize, surface as a discrepancy and skip — do not guess.
+
+## Transclusion Lock-In
+
+When apply executes a Shape B task, it **snapshots** the body of `intent.md#<anchor>` into the corpus at apply time. Subsequent edits to `intent.md` do NOT re-trigger writes to the corpus — apply only processes unchecked tasks, and a checked Shape B task is a fact (§6.3).
+
+To propagate an intent.md edit into the corpus after apply has run, the user goes through `prd-clarify`, which strikes the original task and adds a `re-transclude` task. The next apply picks up the new unchecked task and refreshes the corpus.
+
+This means apply is safe to re-run after intent.md edits: nothing happens unless clarify has added explicit new tasks. See [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §6.7.
 
 ## What This Skill Does NOT Do
 
@@ -65,13 +88,19 @@ This is what makes apply idempotent. Re-running on an unchanged proposal does no
 
 ## Discrepancy Handling
 
-When the agent re-reads a PRD section and finds it doesn't match what `tasks.md` assumes:
+Two kinds of discrepancy can surface:
+
+**Corpus drift (Shape A and B both).** The PRD section's current content doesn't match what `tasks.md` assumes:
 
 > *"Task 3 says change session timeout from 30min to 60min in section 7.2, but section 7.2 currently says 45min. The corpus has drifted from what this proposal expected. Apply anyway as written, edit the task to reflect current state, or pause for clarify?"*
 
-Three resolutions:
+**Anchor not found (Shape B only).** A transclude task points at `intent.md#<anchor>` but that anchor doesn't exist (was renamed, never written, or the slug doesn't match):
 
-- **Apply as written** → write 60min (overrides current 45min).
+> *"Task 2 says transclude `intent.md#short-sitting-list-keeper`, but no heading slugs to that anchor in intent.md. The closest match is `### Short-list user`. Apply against that anchor, edit the task, or pause for clarify?"*
+
+Three resolutions in either case:
+
+- **Apply as written** → execute with current best understanding (or against the closest matching anchor).
 - **Edit the task** → rewrite the task in `tasks.md` to reflect current state, then apply.
 - **Pause for clarify** → leave the task unchecked; hand off to [`prd-clarify`](../prd-clarify/SKILL.md).
 
@@ -101,5 +130,5 @@ If tasks remain (e.g., skipped due to discrepancies or read-only paths):
 ## Shared References
 
 - [`../prd/SKILL.md`](../prd/SKILL.md) — umbrella routing.
-- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §6 (strikethrough rule), §7 (apply loop), §9.3 (apply-time safety net), §13.6 (read-only).
-- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3 (implementation-language patterns), §4 (resume-prompt phrasing).
+- [`../prd/SKILL_DESIGN.md`](../prd/SKILL_DESIGN.md) §3.6 (intent.md anchors), §6 (strikethrough rule, lock-in, why-notes), §7 (apply loop, task shapes), §9.3 (apply-time safety net), §13.6 (read-only).
+- [`../prd/references/REFERENCE.md`](../prd/references/REFERENCE.md) §3 (implementation-language patterns), §4 (resume-prompt phrasing), §10 (two task shapes), §11 (transclusion lock-in).

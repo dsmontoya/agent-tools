@@ -68,3 +68,60 @@ export function extractInlineLinks(content: string): InlineLink[] {
   }
   return out;
 }
+
+// Extract the body under a heading identified by its GitHub-flavored slug.
+// The body runs from the line *after* the heading up to (but not including)
+// the next heading at the same or higher level. Used by apply for Shape B
+// transclusion and by verify to confirm Shape B anchors resolve.
+//
+// Returns null when the slug doesn't match any heading in the document.
+
+export interface SectionBody {
+  heading: Heading;
+  body: string;
+  startLine: number;
+  endLine: number;
+}
+
+export function extractSectionBody(
+  content: string,
+  slug: string,
+): SectionBody | null {
+  const lines = content.split(/\r?\n/);
+  const headings = extractHeadings(content);
+  const target = headings.find((h) => h.slug === slug);
+  if (!target) return null;
+
+  // The body starts on the line after the heading. It ends at the next
+  // heading at the same or higher level (i.e., level <= target.level), or
+  // at end-of-file. Heading line numbers are 1-based.
+  const startLine = target.line + 1;
+  let endLine = lines.length;
+  for (const h of headings) {
+    if (h.line <= target.line) continue;
+    if (h.level <= target.level) {
+      endLine = h.line - 1;
+      break;
+    }
+  }
+  // Slice the body and trim leading + trailing blank lines for stable output.
+  const bodyLines = lines.slice(startLine - 1, endLine);
+  let leadingTrim = 0;
+  while (leadingTrim < bodyLines.length && bodyLines[leadingTrim]!.trim() === "") {
+    leadingTrim++;
+  }
+  let trailingTrim = 0;
+  while (
+    trailingTrim < bodyLines.length - leadingTrim &&
+    bodyLines[bodyLines.length - 1 - trailingTrim]!.trim() === ""
+  ) {
+    trailingTrim++;
+  }
+  const trimmed = bodyLines.slice(leadingTrim, bodyLines.length - trailingTrim);
+  return {
+    heading: target,
+    body: trimmed.join("\n"),
+    startLine: startLine + leadingTrim,
+    endLine: startLine + leadingTrim + trimmed.length - 1,
+  };
+}

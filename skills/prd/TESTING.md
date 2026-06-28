@@ -23,7 +23,7 @@ npm install
 npm test
 ```
 
-Vitest discovers everything under `__tests__/`. As of this writing: **109 tests across 9 files**, ~500ms wall time.
+Vitest discovers everything under `__tests__/`. As of this writing: **140 tests across 11 files**, ~800ms wall time.
 
 ### What's covered
 
@@ -33,7 +33,8 @@ Vitest discovers everything under `__tests__/`. As of this writing: **109 tests 
 |---|---|---|
 | `resolve-config.ts` | `resolve-config.test.ts` | YAML parsing, defaults, template-ref validation, read-only normalization |
 | `list-proposals.ts` | `list-proposals.test.ts` | Active vs archived split; archive folder name parsing; sort order |
-| `proposal-status.ts` | `proposal-status.test.ts` | Strikethrough counting (`- [x]`, `- [x] ~~...~~`, `- [ ] ~~...~~`, etc.) |
+| `proposal-status.ts` | `proposal-status.test.ts` | Strikethrough counting (`- [x]`, `- [x] ~~...~~`, `- [ ] ~~...~~`, etc.); Shape A vs Shape B task classification |
+| `resolve-anchor.ts` | `resolve-anchor.test.ts` | intent.md heading lookup by slug; body extraction up to next same/higher-level heading; missing-anchor case |
 | `list-templates.ts` | `list-templates.test.ts` | Builtin + custom scanning; multi-source override |
 | `validate-template.ts` | `validate-template.test.ts` | Required + soft roles; section presence; storage shape rules |
 | `list-corpus.ts` | `list-corpus.test.ts` | Singleton + per-instance enumeration; `changes/` exclusion; singleton/per-instance dedup |
