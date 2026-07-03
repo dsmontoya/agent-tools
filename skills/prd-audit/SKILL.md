@@ -60,14 +60,14 @@ Mechanical checks come from deterministic scripts. Semantic checks are LLM judgm
 ## How to Run
 
 ```bash
-# Enumerate the full corpus per active bundle
-npx tsx ../prd/scripts/list-corpus.ts <root> <bundle-dir>
-
-# Resolve cross-references in each PRD
-npx tsx ../prd/scripts/resolve-xref.ts <each-prd>
+# One command: resolves xrefs across every corpus file in the bundle
+# and emits an aggregate + broken-only summary.
+npx tsx ../prd/scripts/report-xrefs.ts <root> <bundle-dir> > /tmp/xrefs.json
 ```
 
-Then read PRDs, `glossary.md`, `personas.md` and reason about overlaps, drift, contradictions. Format findings as a tiered report.
+Then Read `/tmp/xrefs.json` and format the broken refs into the CRITICAL tier. Do **not** pipe the JSON into `python3 -c` / `node -e` one-liners — Read the file instead; that's what the file-based emit shape is for.
+
+For the semantic checks (persona drift, capability overlap, contradictions), read the PRDs, `glossary.md`, and `personas.md` directly and reason across them. Format findings as a tiered report.
 
 ## Report Tiers
 
