@@ -31,6 +31,29 @@ Stack-agnostic skill for working with [DESIGN.md](https://github.com/google-labs
 npx skills add dsmontoya/agent-tools@design-md
 ```
 
+### Code Craft
+
+Skills covering a single dimension of code quality each. Independent — install only the ones you want; there is no shared lifecycle and no umbrella skill.
+
+#### [solid-principles](./skills/solid-principles)
+
+SOLID translated out of its class-OO origins into whatever language and paradigm is in play, plus the restraint to not apply it. Teaches the four axes (cohesion, variation, contract, direction), a set of evidence gates governing when to add, deviate, report, and remove structure, and where each principle inverts or is already satisfied by construction — the expression problem under sum types, Go interfaces as ISP by default, typeclass laws as LSP. Existing code wins by default: abstraction needs a second case you can point at, deviation needs pain that actually happened.
+
+**Use when:**
+
+- A boundary is being created or crossed — a new module, a second implementation, a dependency across a layer
+- "How should I structure this?" / "Should this be an interface?"
+- "Clean this up" / "this is getting messy" / "I have to touch five files every time"
+- Promoting a prototype to production
+
+**Not for:** bug fixes, renames, added fields, tests, or throwaway spikes — it is deliberately scoped out of routine work.
+
+**Install:**
+
+```bash
+npx skills add dsmontoya/agent-tools@solid-principles
+```
+
 ### PRD Skill Family
 
 A family of skills for capturing, refining, applying, and inspecting Product Requirements Documents through an explicit propose → apply → archive lifecycle. Proposals live under `<root>/changes/<slug>/` as `intent.md` + `tasks.md` (+ optional `research.md`) so every change to the PRD corpus has an audit-and-redirect step before anything is written.
