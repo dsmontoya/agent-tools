@@ -5,9 +5,9 @@ description: |
   second implementation of something that had one, a dependency wired
   across a layer — or when the user says "how should I structure this",
   "should this be an interface", "this is getting messy", "I have to
-  touch five files every time", or "productionize this prototype".
-  Teaches SOLID in the idiom of the language in play, and when not to
-  abstract at all.
+  touch five files every time", "this is hard to test", or
+  "productionize this prototype". Teaches SOLID in the idiom of the
+  language in play, and when not to abstract at all.
 
   Do NOT load for bug fixes, added fields, tests, renames, or any edit
   local to one function, nor for throwaway work — prototype, PoC,

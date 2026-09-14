@@ -28,7 +28,7 @@ Two design decisions are load-bearing and deliberate:
 
 ## Impact
 
-- **New**: `skills/solid-principles/SKILL.md`, `skills/solid-principles/references/{paradigms,smells,inversions}.md`, `skills/solid-principles/tests/fixtures/triggers.md`
+- **New**: `skills/solid-principles/SKILL.md`, `skills/solid-principles/references/{paradigms,smells,inversions}.md`, `skills/solid-principles/tests/fixtures/triggers.md`, `skills/solid-principles/tests/harness/eval.sh`
 - **Modified**: `README.md` — new "Code Craft" section with install line
 - **Not modified**: `AGENTS.md`. The family-vs-shelf convention and the cross-skill reference rule surfaced during exploration belong in a separate change, so this one stays scoped to the skill.
 - **Adjacent skills**: overlaps `code-review` and `simplify`. This skill teaches structure and declines line-level defect hunting; the boundary is stated in "What This Skill Is Not For" rather than enforced.

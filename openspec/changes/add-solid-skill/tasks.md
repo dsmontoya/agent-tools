@@ -33,6 +33,7 @@
 - [x] 4.3 Write ~12 should-not-load cases, including the traps that contain abstraction vocabulary while being routine (adding a field to an interface, renaming an interface, updating a dependency version) and at least two framed as throwaway work ("spike a quick version of X", "just a PoC to see if this is possible")
 - [x] 4.3a Add a should-load case for prototype promotion ("let's productionize the spike")
 - [x] 4.4 Mark contested cases explicitly and exclude them from scoring
+- [x] 4.6 Write `tests/harness/eval.sh` — parse prompts, labels, contested marks and the decoy list from the fixture; read the description live from `SKILL.md`; run each prompt past a fresh `claude -p`; majority-vote over N runs; score against the asymmetric bar; write results to a gitignored `tests/results/`
 - [x] 4.5 Write the scoring section with the asymmetric bar — zero hard failures (loading on an uncontested should-not-load), at most two soft failures (missing a should-load)
 
 ## 5. Conventions check
@@ -50,5 +51,10 @@
 
 - [x] 7.1 Re-read `SKILL.md` against design.md's gate definition — every gate failable in one sentence, evidence-decided, syntax-free, blocking by default. Demote anything that fails all four to `references/`
 - [x] 7.2 Verify the description against the Tier 1 static properties: boundary test opens it, at least one verbatim phrasing, negative-trigger clause present, uncertainty default present with reason, no abstraction vocabulary in any positive clause
-- [ ] 7.3 Run the trigger fixture once and record the result. Hard-failure bar is zero; if a trap fires, rewrite the description rather than relabelling the case
+- [x] 7.3 Run the trigger fixture once and record the result. Hard-failure bar is zero; if a trap fires, rewrite the description rather than relabelling the case
 - [x] 7.4 Confirm no gate as written requires interpreting a command's output in order to fail. Then resolve or defer the remaining open question in design.md: whether G3's plan-time scatter check needs a retrospective re-check when a plan under-counts
+
+## 8. Follow-ups surfaced by the first run
+
+- [ ] 8.1 Re-run the fixture at RUNS=5 or higher before release — three runs cannot resolve the load-case verdicts, which swung across runs on a change that could not have affected them
+- [ ] 8.2 Decide L7 and L9: whether "split this module in two" and "can the domain code import the database driver?" are should-load or contested. They expose a distinction the labels did not account for — deciding a structure versus executing or asking about one

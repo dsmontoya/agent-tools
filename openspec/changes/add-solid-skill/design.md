@@ -187,7 +187,25 @@ Tier 2 is a fixture at `tests/fixtures/triggers.md`: roughly twenty labelled pro
 
 The trap cases carry most of the value. Prompts containing "interface" or "dependency" while being trivially routine ("add a field to the User interface", "rename the PaymentGateway interface", "update the dependency to v3") directly test whether confining that vocabulary to negative clauses works. Their failure is far more actionable than an aggregate score. In the other direction, prompts that are genuinely structural while containing no structural vocabulary ("add Stripe support" where PayPal exists; "the mock for this is really complicated") test whether the boundary question is carrying its weight.
 
-This is primarily a regression test. Its long-term value is that a future editor tightening the description reruns twenty-two prompts and learns immediately whether the traps started firing.
+This is primarily a regression test. Its long-term value is that a future editor tightening the description reruns the prompts and learns immediately whether the traps started firing — which is why it ships with a runner rather than prose instructions alone.
+
+`tests/harness/eval.sh` implements it. The fixture stays the single source of truth: prompts, labels, contested marks and the decoy list are all parsed out of it, and the description under test is read live from `SKILL.md` so the harness always exercises what actually ships. Each prompt goes to a fresh `claude -p` with no prior context, which is the only way to get an evaluator that does not already know the answer key. Three runs per prompt with a majority vote, because single-shot model decisions vary and a hard-failure bar of zero is otherwise hostage to noise. Results land in a gitignored `tests/results/<label>/`.
+
+One fixture detail the runner has to handle: L3 reads *"Add Stripe support"* with *(PayPal already exists)* as an aside. In real use the agent can see the repository, so the parenthetical is folded into the prompt as context rather than dropped — without it the case would be unfairly labelled, since nothing in the bare prompt reveals a second implementation.
+
+### What the first measurements showed
+
+The fixture was run twice at three runs per prompt with majority voting, the second time after restoring one phrasing. Results live in a gitignored `tests/results/`, so what matters is recorded here.
+
+**The hard bar is robust.** Across both runs, all thirteen uncontested skip cases returned 0/3 — seventy-eight evaluator calls with zero false positives. Every trap held: N3, N4 and N8 ("add a field to the User interface", "rename the PaymentGateway interface", "update the dependency to v3") confirm that confining abstraction vocabulary to negative clauses works and that cutting the explicit *"do not load merely because the code mentions…"* clause was safe; N13 and N14 confirm the throwaway-work clause. This is the result the design most needed, and it is now settled by measurement rather than argument.
+
+**The soft side is too noisy to read at three runs.** Between the two runs the only change was restoring `"this is hard to test"` to the phrasing list, which cannot affect prompts that do not concern testability. Yet L7 moved 0/3 → 2/3, L9 moved 1/3 → 3/3, and L6 — a *verbatim* phrasing match — regressed 3/3 → 2/3. Individual load-case verdicts therefore carry little signal at this sample size, and the second run's clean pass should be read as "within noise of passing" rather than as proof the description improved. Soft-side conclusions need five or more runs; the hard bar tolerates three because its cases are unanimous.
+
+**The restored phrasing is justified by reasoning, not by that measurement.** `"this is hard to test"` was cut during simplification as redundant with the two pain phrasings retained. It is not: those cover vagueness and scatter, while testability is the DIP signal and had no other anchor in the description. L5's 1/3 → 2/3 movement is consistent with that but well inside the observed noise band, so it corroborates nothing on its own.
+
+**L7 and L9 remain genuine labelling disputes even though they now score as passes.** Their reasoning was coherent on the runs where they declined — "split this module in two" reads as execution of a decision already made, and "can the domain code import the database driver?" reads as a question about existing convention. Both apply the description's conservative default correctly. The distinction they expose — deciding a structure versus executing or asking about one — was not accounted for when the labels were written, and passing on one run does not resolve it.
+
+**Three harness bugs were fixed before any result could be trusted**, worth recording because a broken harness produces confident nonsense. `xargs` quoting broke on apostrophes in prompts while the pipeline still reported success; asking for a bare name list with "no explanation" made every case answer "none", producing a meaningless all-pass; and the scoring loop piped into `tee` ran in a subshell, discarding its counters. The evaluator now reasons and terminates with a parsed `ANSWER:` line, and transport failures are retried rather than scored as "did not load".
 
 ## Risks / Trade-offs
 
