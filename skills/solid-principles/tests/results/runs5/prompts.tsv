@@ -6,7 +6,7 @@ L5	no	The mock for this is really complicated
 L6	no	Clean this up, it's getting messy
 L7	no	Split this module in two
 L8	no	We're adding a second storage backend
-L9	no	Can the domain code import the database driver?
+L9	yes	Can the domain code import the database driver?
 L10	yes	Why does changing the logger break unrelated tests?
 L11	no	Let's productionize the spike
 N1	no	Fix the null check in parseDate

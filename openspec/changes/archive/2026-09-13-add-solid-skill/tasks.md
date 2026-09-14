@@ -56,5 +56,5 @@
 
 ## 8. Follow-ups surfaced by the first run
 
-- [ ] 8.1 Re-run the fixture at RUNS=5 or higher before release — three runs cannot resolve the load-case verdicts, which swung across runs on a change that could not have affected them
-- [ ] 8.2 Decide L7 and L9: whether "split this module in two" and "can the domain code import the database driver?" are should-load or contested. They expose a distinction the labels did not account for — deciding a structure versus executing or asking about one
+- [x] 8.1 Re-run the fixture at RUNS=5 or higher before release — three runs cannot resolve the load-case verdicts, which swung across runs on a change that could not have affected them
+- [x] 8.2 Decide L7 and L9: whether "split this module in two" and "can the domain code import the database driver?" are should-load or contested. They expose a distinction the labels did not account for — deciding a structure versus executing or asking about one

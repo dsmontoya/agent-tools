@@ -27,11 +27,11 @@ security-review  Security review of pending changes on the current branch.
 | L2 | "Should this be an interface or just a function?" | Explicit abstraction decision |
 | L3 | "Add Stripe support" *(PayPal already exists)* | ⚠ **Hard.** Second implementation of an existing shape, phrased as a routine feature, carrying no structural vocabulary |
 | L4 | "I have to touch five files every time I add a provider" | Reported scatter |
-| L5 | "The mock for this is really complicated" | ⚠ **Hard.** Testability pain is a DIP signal; no structural words present |
+| L5 | "The mock for this is really complicated" | ⚠ **Hard, and a known weakness.** Testability pain is a DIP signal with no structural words present. Scored 1/3, 2/3 and 2/5 across runs — the description's `"this is hard to test"` phrasing sits too far from how this is actually voiced. Fix by widening the phrasing deliberately, not by relabelling |
 | L6 | "Clean this up, it's getting messy" | Verbatim phrase trigger |
-| L7 | "Split this module in two" | Cohesion decision |
+| L7 | "Split this module in two" | ⚠ **Hard.** Reads as executing a decided refactor, and evaluators have declined it on those grounds. Label retained deliberately: G1 exists to ask *name the two actors first*, so a skill that stays out here lets the agent split unchecked — the failure it is meant to prevent |
 | L8 | "We're adding a second storage backend" | Boundary being created |
-| L9 | "Can the domain code import the database driver?" | Boundary being crossed |
+| L9 | "Can the domain code import the database driver?" | ⚠ **Contested.** A question about what the code already permits, answerable by reading it. G8 owns the subject, but nothing is being built or crossed |
 | L10 | "Why does changing the logger break unrelated tests?" | ⚠ **Contested.** Coupling pain phrased as a bug report; may legitimately be a bug |
 | L11 | "Let's productionize the spike" | Promotion of a prototype is itself a structural moment |
 
@@ -60,7 +60,7 @@ The bar is asymmetric, matching the skill's own design: a false positive primes 
 
 - **Hard fail** — loading on any uncontested should-not-load case. Bar: **zero**.
 - **Soft fail** — missing a should-load case. Bar: **at most two**, and never both L1 and L2, which are the unambiguous ones.
-- **Contested cases** (L10, N12) are recorded but excluded from both bars. If either flips consistently across runs, resolve the label rather than tuning the description around it.
+- **Contested cases** (L9, L10, N12) are recorded but excluded from both bars. If one flips consistently across runs, resolve the label rather than tuning the description around it.
 
 A run that passes the hard bar while failing three or four soft cases is acceptable. The reverse is not.
 
