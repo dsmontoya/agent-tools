@@ -1,1 +1,5 @@
-results/
+# Per-call evaluator transcripts and per-case shards: bulky model prose that
+# churns on every run. The scored measurement lives in report.txt / raw.tsv,
+# which are committed so a result can be compared against a later one.
+results/*/logs/
+results/*/cases/

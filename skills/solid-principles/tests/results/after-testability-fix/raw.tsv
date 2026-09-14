@@ -1,0 +1,25 @@
+L1	no	yes	3/3	How should I structure the payments module?
+L10	yes	yes	3/3	Why does changing the logger break unrelated tests?
+L11	no	yes	3/3	Let's productionize the spike
+L2	no	yes	3/3	Should this be an interface or just a function?
+L3	no	yes	3/3	Add Stripe support  (context: PayPal already exists)
+L4	no	yes	3/3	I have to touch five files every time I add a provider
+L5	no	yes	2/3	The mock for this is really complicated
+L6	no	yes	2/3	Clean this up, it's getting messy
+L7	no	yes	2/3	Split this module in two
+L8	no	yes	3/3	We're adding a second storage backend
+L9	no	yes	3/3	Can the domain code import the database driver?
+N1	no	no	0/3	Fix the null check in parseDate
+N10	no	no	0/3	Add logging to the checkout flow
+N11	no	no	0/3	Make this more solid
+N12	yes	no	1/3	What's the difference between an abstract class and an interface?
+N13	no	no	0/3	Spike a quick version of the importer so we can see if it's feasible
+N14	no	no	0/3	Just a PoC to check whether the vendor API can do what we need
+N2	no	no	0/3	Rename userId to accountId
+N3	no	no	0/3	Add a field to the User interface
+N4	no	no	0/3	Rename the PaymentGateway interface
+N5	no	no	0/3	Write a test for the payment processor
+N6	no	no	0/3	This function is getting long
+N7	no	no	0/3	Extract these three lines into a helper
+N8	no	no	0/3	Update the dependency to v3
+N9	no	no	0/3	Why is this test flaky?
