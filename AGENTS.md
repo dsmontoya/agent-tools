@@ -59,3 +59,20 @@ This repo is Apache 2.0. Skills that vendor non-Apache 2.0 content should:
 - Add a per-skill `LICENSE` file if the license differs.
 - Update the repo `NOTICE` with attribution.
 - Use a compatible license (MIT, BSD, Apache 2.0).
+
+## Repo-Development Skills
+
+`npx skills add dsmontoya/agent-tools` clones this repo and discovers every
+`SKILL.md` in it. Only the skills under `skills/` are meant to be installable.
+
+`.claude/skills/` is untracked (see `.gitignore`), so nothing there reaches the
+published clone. That directory is machine-managed: the openspec CLI generates
+its `openspec-*` skills into it, and `npx skills add` installs project-scope
+skills there. Contributors regenerate the openspec skills with `openspec update`.
+
+After changing what the repo publishes, verify against the tracked tree — the
+working tree still holds the ignored files:
+
+```bash
+git ls-files | grep SKILL.md | grep -v '^skills/'   # must print nothing
+```
