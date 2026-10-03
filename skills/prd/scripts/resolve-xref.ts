@@ -20,7 +20,7 @@
 //   missing_source — source file does not exist
 
 import { resolve, dirname, isAbsolute, join } from "node:path";
-import { emit, failWith } from "./lib/cli.ts";
+import { emit, failWith, isMain } from "./lib/cli.ts";
 import { fileExists, readTextFile } from "./lib/fs.ts";
 import { extractInlineLinks, extractHeadings } from "./lib/markdown.ts";
 
@@ -168,5 +168,4 @@ function main(argv: string[]): void {
   }
 }
 
-const invokedDirectly = import.meta.url === `file://${process.argv[1]}`;
-if (invokedDirectly) main(process.argv);
+if (isMain(import.meta.url)) main(process.argv);

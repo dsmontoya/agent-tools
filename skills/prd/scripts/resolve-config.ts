@@ -21,7 +21,7 @@
 
 import { join, resolve } from "node:path";
 import yaml from "js-yaml";
-import { emit, failWith } from "./lib/cli.ts";
+import { emit, failWith, isMain } from "./lib/cli.ts";
 import { fileExists, readTextFile } from "./lib/fs.ts";
 import { parseTemplateRef, DEFAULT_TEMPLATE } from "./lib/template-ref.ts";
 import type { PrdConfigRaw, ResolvedConfig } from "./lib/types.ts";
@@ -133,6 +133,4 @@ function main(argv: string[]): void {
   }
 }
 
-// Only execute when invoked directly (not when imported by tests).
-const invokedDirectly = import.meta.url === `file://${process.argv[1]}`;
-if (invokedDirectly) main(process.argv);
+if (isMain(import.meta.url)) main(process.argv);
