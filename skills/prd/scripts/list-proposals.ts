@@ -15,7 +15,7 @@
 // to re-stat the directory.
 
 import { resolve, join, basename } from "node:path";
-import { emit, failWith } from "./lib/cli.ts";
+import { emit, failWith, isMain } from "./lib/cli.ts";
 import { dirExists, fileExists, listDirs, lastMtimeIso } from "./lib/fs.ts";
 import { parseTasks, countTasks } from "./lib/tasks.ts";
 import { readFileSync } from "node:fs";
@@ -136,8 +136,7 @@ function main(argv: string[]): void {
   }
 }
 
-const invokedDirectly = import.meta.url === `file://${process.argv[1]}`;
-if (invokedDirectly) main(process.argv);
+if (isMain(import.meta.url)) main(process.argv);
 
 // Re-export for callers that want to compose without spawning a subprocess.
 export { basename };

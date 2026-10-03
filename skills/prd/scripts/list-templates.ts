@@ -18,7 +18,7 @@
 // and `parse_error: <reason>`.
 
 import { resolve, join } from "node:path";
-import { emit, failWith } from "./lib/cli.ts";
+import { emit, failWith, isMain } from "./lib/cli.ts";
 import { dirExists, listDirs } from "./lib/fs.ts";
 import { loadBundleConfig } from "./lib/bundle.ts";
 
@@ -138,5 +138,4 @@ function main(argv: string[]): void {
   }
 }
 
-const invokedDirectly = import.meta.url === `file://${process.argv[1]}`;
-if (invokedDirectly) main(process.argv);
+if (isMain(import.meta.url)) main(process.argv);
